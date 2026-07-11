@@ -13,7 +13,7 @@
 /* ============================================================
    NOTAS — o que falta antes de publicar
    1) Secção #portfolio → liga o vídeo real (embed/link) em cada cartão
-   2) Secção #precos → confirma/ajusta os valores para os preços reais
+   2) Secção #faq → revê o texto das respostas se necessário
    3) No <script> final → define CONFIG.LEAD_ENDPOINT com o URL do
       Google Apps Script (mesmo padrão da Lista Casa) para os leads
       caírem numa Google Sheet automaticamente
@@ -326,17 +326,51 @@ img{max-width:100%;display:block;}
   max-height:0;overflow:hidden;
   transition:max-height .35s ease;
 }
-.faq-item.is-open .faq-a{max-height:400px;}
+.faq-item.is-open .faq-a{max-height:500px;}
 .faq-a-inner{
   padding:0 24px 24px 68px;
   display:flex;gap:10px;color:var(--ink-soft);font-size:14.5px;line-height:1.65;
 }
-.faq-a-inner .faq-avatar{
-  flex-shrink:0;width:22px;height:22px;border-radius:50%;
-  background:linear-gradient(135deg,var(--red),var(--orange));
-  margin-top:2px;
+
+/* bolinha estilo "avatar da IA" com gradiente animado enquanto pensa/escreve */
+.faq-avatar{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;margin-top:2px;
+  background:linear-gradient(120deg,var(--red),var(--orange),var(--red-dark),var(--red));
+  background-size:300% 300%;
 }
+.faq-avatar.is-thinking,
+.faq-avatar.is-typing{
+  animation:faqAvatarSpin 1.6s ease-in-out infinite;
+}
+
+@keyframes faqAvatarSpin{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* "a pensar..." antes de começar a escrever */
+.faq-thinking{
+  display:none;align-items:center;gap:4px;padding-top:2px;height:16px;
+}
+.faq-thinking span{
+  width:6px;height:6px;border-radius:50%;background:var(--ink-soft);
+  animation:faqDot 1s infinite ease-in-out;
+}
+.faq-thinking span:nth-child(2){animation-delay:.15s;}
+.faq-thinking span:nth-child(3){animation-delay:.3s;}
+@keyframes faqDot{0%,80%,100%{opacity:.25;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
+/* letras aparecendo com fade suave, uma a uma */
 .faq-a-text{white-space:pre-wrap;}
+.faq-a-text .fchar{
+  opacity:0;
+  animation:faqCharFade .35s ease forwards;
+}
+@keyframes faqCharFade{
+  from{opacity:0;transform:translateY(2px);}
+  to{opacity:1;transform:translateY(0);}
+}
 .faq-cursor{
   display:inline-block;width:2px;height:14px;background:var(--red);
   margin-left:2px;vertical-align:middle;
@@ -344,14 +378,7 @@ img{max-width:100%;display:block;}
 }
 .faq-cursor.is-done{display:none;}
 @keyframes faqBlink{50%{opacity:0;}}
-.faq-loading{display:flex;gap:4px;padding-top:2px;}
-.faq-loading span{
-  width:6px;height:6px;border-radius:50%;background:var(--ink-soft);
-  animation:faqDot 1s infinite ease-in-out;
-}
-.faq-loading span:nth-child(2){animation-delay:.15s;}
-.faq-loading span:nth-child(3){animation-delay:.3s;}
-@keyframes faqDot{0%,80%,100%{opacity:.25;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
 
 
 /* ---------- formulário ---------- */
@@ -576,26 +603,6 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     </div>
   </section>
 
-  <!-- PREÇOS -->
-  <section class="section" id="precos">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow mono">INVESTIMENTO</span>
-        <h2>Faixa de preço</h2>
-      </div>
-      <div class="price-hero reveal">
-        <span class="big">400€ – 7.000€</span>
-        <span class="label">Consoante o tipo de projeto, duração e nº de dias de filmagem.</span>
-      </div>
-      <div class="price-grid reveal">
-        <div class="price-card"><span class="mono">Redes Sociais</span><div class="amount">400€–900€</div><p>Por vídeo</p></div>
-        <div class="price-card"><span class="mono">Cobertura de Evento</span><div class="amount">800€–2.000€</div><p>Meio dia a dia completo</p></div>
-        <div class="price-card"><span class="mono">Vídeo Institucional</span><div class="amount">1.500€–3.500€</div><p>Guião a entrega final</p></div>
-        <div class="price-card"><span class="mono">Campanha / Spot</span><div class="amount">2.500€–7.000€</div><p>Produção completa</p></div>
-      </div>
-    </div>
-  </section>
-
   <!-- FAQ -->
   <section class="section section--smoke" id="faq">
     <div class="wrap">
@@ -616,7 +623,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <div class="faq-a">
             <div class="faq-a-inner">
               <span class="faq-avatar"></span>
-              <span class="faq-a-text"></span>
+              <div>
+                <div class="faq-thinking"><span></span><span></span><span></span></div>
+                <span class="faq-a-text"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -630,7 +640,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <div class="faq-a">
             <div class="faq-a-inner">
               <span class="faq-avatar"></span>
-              <span class="faq-a-text"></span>
+              <div>
+                <div class="faq-thinking"><span></span><span></span><span></span></div>
+                <span class="faq-a-text"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -644,7 +657,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <div class="faq-a">
             <div class="faq-a-inner">
               <span class="faq-avatar"></span>
-              <span class="faq-a-text"></span>
+              <div>
+                <div class="faq-thinking"><span></span><span></span><span></span></div>
+                <span class="faq-a-text"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -658,7 +674,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <div class="faq-a">
             <div class="faq-a-inner">
               <span class="faq-avatar"></span>
-              <span class="faq-a-text"></span>
+              <div>
+                <div class="faq-thinking"><span></span><span></span><span></span></div>
+                <span class="faq-a-text"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -672,7 +691,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <div class="faq-a">
             <div class="faq-a-inner">
               <span class="faq-avatar"></span>
-              <span class="faq-a-text"></span>
+              <div>
+                <div class="faq-thinking"><span></span><span></span><span></span></div>
+                <span class="faq-a-text"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -774,7 +796,6 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
       <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
       <div class="footer-links">
         <a href="#portfolio">Portfólio</a>
-        <a href="#precos">Preços</a>
         <a href="#faq">FAQ</a>
         <a href="#formulario">Contacto</a>
       </div>
@@ -984,42 +1005,66 @@ form.addEventListener('submit', async (e) => {
   toggleDataEvento();
 });
 
-/* ---------- FAQ estilo IA (efeito de digitação) ---------- */
+/* ---------- FAQ estilo IA (pensando + digitação com fade) ---------- */
 (function(){
   const items = document.querySelectorAll('#faqList .faq-item');
 
   items.forEach(item => {
     const btn = item.querySelector('.faq-q');
+    const avatar = item.querySelector('.faq-avatar');
+    const thinking = item.querySelector('.faq-thinking');
     const answerEl = item.querySelector('.faq-a-text');
     const fullText = item.getAttribute('data-answer') || '';
-    let typed = false;      // já escreveu o texto alguma vez?
-    let typing = false;     // está a escrever agora?
-    let typeTimer = null;
+    let typed = false;
+    let running = false;
 
     function typeText(){
-      typing = true;
       answerEl.textContent = '';
+      avatar.classList.add('is-typing');
+
       const cursor = document.createElement('span');
       cursor.className = 'faq-cursor';
       answerEl.after(cursor);
 
+      const chars = fullText.split('');
       let i = 0;
-      typeTimer = setInterval(() => {
-        answerEl.textContent = fullText.slice(0, i + 1);
-        i++;
-        if(i >= fullText.length){
-          clearInterval(typeTimer);
+
+      function typeNext(){
+        if(i >= chars.length){
           cursor.classList.add('is-done');
-          typing = false;
+          avatar.classList.remove('is-typing');
           typed = true;
+          running = false;
+          return;
         }
-      }, 14); // velocidade da "digitação"
+        const span = document.createElement('span');
+        span.className = 'fchar';
+        span.textContent = chars[i];
+        answerEl.appendChild(span);
+        i++;
+        // pequena variação de ritmo pra parecer mais natural
+        const delay = 16 + Math.random() * 14;
+        setTimeout(typeNext, delay);
+      }
+      typeNext();
+    }
+
+    function runSequence(){
+      running = true;
+      thinking.style.display = 'flex';
+      avatar.classList.add('is-thinking');
+
+      // delay de "a pensar..." antes de começar a escrever
+      setTimeout(() => {
+        thinking.style.display = 'none';
+        avatar.classList.remove('is-thinking');
+        typeText();
+      }, 900 + Math.random() * 400);
     }
 
     btn.addEventListener('click', () => {
       const isOpen = item.classList.contains('is-open');
 
-      // fecha os outros (efeito accordion)
       items.forEach(other => {
         if(other !== item) other.classList.remove('is-open');
       });
@@ -1031,9 +1076,8 @@ form.addEventListener('submit', async (e) => {
 
       item.classList.add('is-open');
 
-      if(!typed && !typing){
-        // pequeno "delay de geração" antes de começar a escrever
-        setTimeout(typeText, 220);
+      if(!typed && !running){
+        runSequence();
       }
     });
   });
