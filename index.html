@@ -243,7 +243,15 @@ img{max-width:100%;display:block;}
 
 /* ---------- portfolio ---------- */
 .port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.port-card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--white);}
+.port-card{
+  display:block;border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;background:var(--white);text-decoration:none;color:inherit;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.port-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 28px rgba(21,16,13,.12);
+}
 .port-thumb{
   aspect-ratio:16/10;position:relative;
   display:flex;align-items:center;justify-content:center;
@@ -378,7 +386,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
         <p class="sub">Vídeo institucional, cobertura de eventos e conteúdo para redes sociais — feito para dar nitidez à tua marca e fechar mais negócio.</p>
         <div class="hero-ctas">
           <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
-          <a href="#portfolio" class="btn btn--ghost">Ver Portefólio</a>
+          <a href="#portfolio" class="btn btn--ghost">Ver Portfólio</a>
         </div>
         <p class="trustline"><strong>★ 4.9/5</strong> avaliação média · <strong>+40</strong> projetos entregues · resposta em <strong>24h</strong></p>
       </div>
@@ -494,20 +502,20 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
   <section class="section section--smoke" id="portfolio">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow mono">PORTEFÓLIO</span>
+        <span class="eyebrow mono">PORTFÓLIO</span>
         <h2>Trabalho recente</h2>
         <p>Uma seleção dos últimos comerciais e conteúdos produzidos pela WillScope.</p>
       </div>
       <div class="port-grid">
-        <div class="port-card reveal"><div class="port-thumb t1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Wise</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Esthesis</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Mimosa — 01</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Mimosa — 02</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Puma</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Mini-Novela</span><h4>Restaurante Pikatta</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Ergomotion</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Social Content</span><h4>Restaurante Shifu</h4></div></div>
-        <div class="port-card reveal"><div class="port-thumb t9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Multiplo</h4></div></div>
+        <a href="projetos/wise.html" class="port-card reveal"><div class="port-thumb t1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Wise</h4></div></a>
+        <a href="projetos/esthesis.html" class="port-card reveal"><div class="port-thumb t2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Esthesis</h4></div></a>
+        <a href="projetos/mimosa-01.html" class="port-card reveal"><div class="port-thumb t3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Mimosa — 01</h4></div></a>
+        <a href="projetos/mimosa-02.html" class="port-card reveal"><div class="port-thumb t4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Mimosa — 02</h4></div></a>
+        <a href="projetos/puma.html" class="port-card reveal"><div class="port-thumb t5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Puma</h4></div></a>
+        <a href="projetos/pikatta.html" class="port-card reveal"><div class="port-thumb t6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Mini-Novela</span><h4>Restaurante Pikatta</h4></div></a>
+        <a href="projetos/ergomotion.html" class="port-card reveal"><div class="port-thumb t7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Ergomotion</h4></div></a>
+        <a href="projetos/shifu.html" class="port-card reveal"><div class="port-thumb t8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Social Content</span><h4>Restaurante Shifu</h4></div></a>
+        <a href="projetos/multiplo.html" class="port-card reveal"><div class="port-thumb t9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Multiplo</h4></div></a>
       </div>
     </div>
   </section>
@@ -624,7 +632,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     <div class="footer-top">
       <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
       <div class="footer-links">
-        <a href="#portfolio">Portefólio</a>
+        <a href="#portfolio">Portfólio</a>
         <a href="#precos">Preços</a>
         <a href="#formulario">Contacto</a>
       </div>
