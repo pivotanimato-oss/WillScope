@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WillScope — Produção de Vídeo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%23E63428' stroke-width='8'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%23E63428'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   NOTAS — o que falta antes de publicar
+   1) Secção #portfolio → liga o vídeo real (embed/link) em cada cartão
+   2) Secção #precos → confirma/ajusta os valores para os preços reais
+   3) No <script> final → define CONFIG.LEAD_ENDPOINT com o URL do
+      Google Apps Script (mesmo padrão da Lista Casa) para os leads
+      caírem numa Google Sheet automaticamente
+   ============================================================ */
+
+:root{
+  --white:#FFFFFF;
+  --smoke:#F4F4F2;
+  --ink:#15100D;
+  --ink-soft:#5B534E;
+  --red:#E63428;
+  --red-dark:#B0221A;
+  --orange:#FF7A1A;
+  --line:#E9E5E1;
+  --radius:2px;
+  --max:1180px;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto;}}
+
+body{
+  margin:0;
+  background:var(--white);
+  color:var(--ink);
+  font-family:'Work Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
+
+h1,h2,h3{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:900;
+  letter-spacing:.01em;
+  margin:0;
+  text-transform:uppercase;
+}
+
+.mono{
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.06em;
+}
+
+a{color:inherit;}
+img{max-width:100%;display:block;}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px;}
+
+/* ---------- scroll scrubber (linha de progresso, como o cursor de um editor de vídeo) ---------- */
+#scrubber{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  z-index:999;transition:width .05s linear;
+}
+
+/* ---------- reveal (efeito "puxar o foco": desfocado > nítido) ---------- */
+.reveal{
+  opacity:0;
+  filter:blur(10px);
+  transform:translateY(18px);
+  transition:opacity .8s ease, filter .8s ease, transform .8s ease;
+}
+.reveal.in-view{opacity:1;filter:blur(0);transform:none;}
+@media (prefers-reduced-motion: reduce){
+  .reveal{transition:none;opacity:1;filter:none;transform:none;}
+}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;
+}
+.logo{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:900;font-size:22px;letter-spacing:.02em;
+}
+.logo span{color:var(--red);}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  padding:12px 22px;border-radius:var(--radius);
+  border:2px solid var(--ink);
+  cursor:pointer;text-decoration:none;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn--primary{
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  border-color:transparent;color:var(--white);
+}
+.btn--primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px -8px rgba(230,52,40,.55);}
+.btn--ghost{background:transparent;color:var(--ink);}
+.btn--ghost:hover{background:var(--ink);color:var(--white);}
+.btn--sm{padding:9px 16px;font-size:12px;}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;
+  padding:96px 0 80px;
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+}
+.hero .wrap{position:relative;z-index:2;}
+.hero-scope{
+  position:absolute;right:-120px;top:50%;transform:translateY(-50%);
+  width:560px;height:560px;opacity:.08;z-index:1;pointer-events:none;
+}
+.hud{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--ink-soft);margin-bottom:56px;
+}
+.hud span{display:flex;align-items:center;gap:6px;}
+.rec-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--red);
+  animation:pulse 1.6s infinite ease-in-out;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+@media (prefers-reduced-motion: reduce){.rec-dot{animation:none;}}
+
+.hero-content{
+  max-width:760px;
+  opacity:0;filter:blur(14px);transform:scale(1.03);
+  transition:opacity 1s ease, filter 1s ease, transform 1s ease;
+}
+.hero-content.is-focused{opacity:1;filter:blur(0);transform:scale(1);}
+@media (prefers-reduced-motion: reduce){
+  .hero-content{transition:none;opacity:1;filter:none;transform:none;}
+}
+.eyebrow{
+  font-size:12px;color:var(--red);font-weight:600;margin-bottom:18px;
+  display:inline-block;
+}
+.hero h1{
+  font-size:clamp(40px,6vw,74px);
+  line-height:0.98;
+  margin-bottom:26px;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p.sub{
+  font-size:19px;color:var(--ink-soft);max-width:540px;margin-bottom:36px;
+}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:44px;}
+.trustline{font-size:13px;color:var(--ink-soft);}
+.trustline strong{color:var(--ink);}
+
+/* ---------- sprocket divider (tira de película) ---------- */
+.sprocket{
+  display:flex;justify-content:space-between;
+  padding:0 28px;max-width:var(--max);margin:0 auto;
+}
+.sprocket span{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--line);
+}
+.sprocket-band{padding:14px 0;border-bottom:1px solid var(--line);}
+
+/* ---------- trust ---------- */
+.trust{padding:40px 0;border-bottom:1px solid var(--line);}
+.trust p{
+  text-align:center;font-size:12px;color:var(--ink-soft);
+  margin-bottom:24px;text-transform:uppercase;letter-spacing:.08em;
+}
+.trust-logos{
+  display:flex;justify-content:center;gap:44px;flex-wrap:wrap;
+}
+.trust-logos div{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+  font-size:20px;color:#C9C3BD;letter-spacing:.03em;
+}
+
+/* ---------- section shell ---------- */
+.section{padding:96px 0;}
+.section--smoke{background:var(--smoke);}
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head .eyebrow{color:var(--red);}
+.section-head h2{font-size:clamp(30px,4vw,46px);margin-top:10px;}
+.section-head p{color:var(--ink-soft);font-size:16px;margin-top:14px;}
+
+/* ---------- diagnóstico ---------- */
+.diag-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.diag-card{
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+  padding:32px 28px;
+}
+.diag-card .mono{font-size:11px;color:var(--red);}
+.diag-card h3{
+  font-size:22px;text-transform:none;margin:14px 0 12px;
+}
+.diag-card p{color:var(--ink-soft);font-size:15px;margin:0;}
+
+/* ---------- solução ---------- */
+.sol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.sol-card{padding:0;}
+.sol-icon{
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--red);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;color:var(--red);
+}
+.sol-card h3{font-size:20px;text-transform:none;margin-bottom:10px;}
+.sol-card p{color:var(--ink-soft);font-size:15px;}
+
+/* ---------- processo ---------- */
+.proc-list{border-top:1px solid var(--line);}
+.proc-item{
+  display:grid;grid-template-columns:100px 1fr 160px;gap:24px;
+  padding:28px 0;border-bottom:1px solid var(--line);align-items:center;
+}
+.proc-item .mono{color:var(--red);font-size:13px;}
+.proc-item h3{font-size:19px;text-transform:none;margin-bottom:6px;}
+.proc-item p{color:var(--ink-soft);font-size:14px;margin:0;}
+.proc-item .when{
+  text-align:right;font-size:12px;color:var(--ink-soft);
+  font-family:'IBM Plex Mono',monospace;
+}
+
+/* ---------- portfolio ---------- */
+.port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.port-card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--white);}
+.port-thumb{
+  aspect-ratio:16/10;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.9);
+}
+.port-thumb svg{width:34px;height:34px;position:relative;z-index:2;}
+.port-thumb::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.14),transparent 60%);
+}
+.t1{background:linear-gradient(135deg,#B0221A,#FF7A1A);}
+.t2{background:linear-gradient(135deg,#15100D,#B0221A);}
+.t3{background:linear-gradient(135deg,#FF7A1A,#E63428);}
+.t4{background:linear-gradient(135deg,#5B534E,#15100D);}
+.t5{background:linear-gradient(135deg,#E63428,#15100D);}
+.t6{background:linear-gradient(135deg,#FF7A1A,#5B534E);}
+.t7{background:linear-gradient(135deg,#E63428,#FF7A1A);}
+.t8{background:linear-gradient(135deg,#15100D,#E63428);}
+.t9{background:linear-gradient(135deg,#5B534E,#FF7A1A);}
+.port-meta{padding:16px 18px;}
+.port-meta .mono{font-size:10px;color:var(--red);text-transform:uppercase;}
+.port-meta h4{
+  font-family:'Work Sans',sans-serif;font-weight:600;font-size:15px;
+  margin:6px 0 0;text-transform:none;
+}
+
+/* ---------- preços ---------- */
+.price-hero{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:48px;
+}
+.price-hero .big{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:900;
+  font-size:clamp(48px,7vw,88px);
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  line-height:1;
+}
+.price-hero .label{color:var(--ink-soft);font-size:15px;max-width:280px;}
+.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.price-card{background:var(--white);padding:28px 24px;}
+.price-card .mono{font-size:11px;color:var(--ink-soft);text-transform:uppercase;}
+.price-card .amount{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;margin:10px 0 8px;
+}
+.price-card p{font-size:13px;color:var(--ink-soft);margin:0;}
+
+/* ---------- formulário ---------- */
+.form-section{background:var(--ink);color:var(--white);}
+.form-section .section-head p{color:#C9C1BA;}
+.form-section .eyebrow{color:var(--orange);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.field{display:flex;flex-direction:column;gap:8px;}
+.field--full{grid-column:1 / -1;}
+label{font-size:12px;font-family:'IBM Plex Mono',monospace;color:#C9C1BA;text-transform:uppercase;letter-spacing:.05em;}
+label .req{color:var(--orange);}
+input,select,textarea{
+  background:#241B17;border:1px solid #3A2F29;color:var(--white);
+  padding:13px 14px;border-radius:var(--radius);font-family:'Work Sans',sans-serif;font-size:15px;
+  outline:none;transition:border-color .15s ease;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--orange);}
+textarea{resize:vertical;min-height:100px;}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9C1BA' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.budget-field{border:1px solid var(--orange);border-radius:var(--radius);padding:2px;}
+.budget-note{font-size:12px;color:#C9C1BA;margin-top:4px;}
+.form-submit{margin-top:32px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.form-msg{
+  display:none;margin-top:24px;padding:18px 20px;border-radius:var(--radius);
+  background:rgba(255,122,26,.12);border:1px solid var(--orange);font-size:15px;
+}
+.form-msg.show{display:block;}
+
+/* ---------- footer ---------- */
+.footer{background:#0F0B09;color:#8A817A;padding:48px 0 32px;}
+.footer .sprocket span{background:#241B17;}
+.footer-top{
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;
+  padding:36px 0 24px;border-bottom:1px solid #241B17;margin-bottom:24px;
+}
+.footer .logo{color:var(--white);}
+.footer-links{display:flex;gap:28px;font-size:14px;flex-wrap:wrap;}
+.footer-bottom{font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr 1fr;}
+  .proc-item{grid-template-columns:60px 1fr;}
+  .proc-item .when{grid-column:2;text-align:left;}
+  .form-grid{grid-template-columns:1fr;}
+  .hero-scope{display:none;}
+}
+@media (max-width:560px){
+  .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr;}
+  .hud{display:none;}
+  .trust-logos{gap:24px;}
+  .hero{padding:56px 0 60px;}
+  .section{padding:64px 0;}
+}
+</style>
+</head>
+<body>
+
+<div id="scrubber"></div>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="logo">WILL<span>SCOPE</span></div>
+    <a href="#formulario" class="btn btn--primary btn--sm">Pedir Orçamento</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <svg class="hero-scope" viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="100" cy="100" r="96" fill="none" stroke="#E63428" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="72" fill="none" stroke="#E63428" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="48" fill="none" stroke="#FF7A1A" stroke-width="1.5"/>
+      <line x1="100" y1="0" x2="100" y2="200" stroke="#E63428" stroke-width="1"/>
+      <line x1="0" y1="100" x2="200" y2="100" stroke="#E63428" stroke-width="1"/>
+    </svg>
+    <div class="wrap">
+      <div class="hud mono">
+        <span>WILLSCOPE™ · LISBOA</span>
+        <span><span class="rec-dot"></span> REC <span id="timecode">00:00:00:00</span></span>
+        <span>f/2.8 · 24FPS</span>
+      </div>
+      <div class="hero-content" id="heroContent">
+        <span class="eyebrow mono">PRODUÇÃO DE VÍDEO PARA NEGÓCIOS</span>
+        <h1>Se não está <em>em foco</em>,<br>já perdeste o cliente.</h1>
+        <p class="sub">Vídeo institucional, cobertura de eventos e conteúdo para redes sociais — feito para dar nitidez à tua marca e fechar mais negócio.</p>
+        <div class="hero-ctas">
+          <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
+          <a href="#portfolio" class="btn btn--ghost">Ver Portefólio</a>
+        </div>
+        <p class="trustline"><strong>★ 4.9/5</strong> avaliação média · <strong>+40</strong> projetos entregues · resposta em <strong>24h</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="sprocket-band"><div class="sprocket">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div></div>
+
+  <!-- TRUST -->
+  <section class="trust">
+    <div class="wrap">
+      <p>Marcas que já confiaram no nosso foco</p>
+      <div class="trust-logos">
+        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIAGNÓSTICO -->
+  <section class="section" id="diagnostico">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">O PROBLEMA</span>
+        <h2>O que está a travar o teu negócio</h2>
+      </div>
+      <div class="diag-grid">
+        <div class="diag-card reveal">
+          <span class="mono">01</span>
+          <h3>O telemóvel já não chega</h3>
+          <p>Vídeo feito à pressa transmite uma imagem amadora — e afasta exatamente os clientes que pagam mais.</p>
+        </div>
+        <div class="diag-card reveal">
+          <span class="mono">02</span>
+          <h3>Ninguém sabe o que fazes</h3>
+          <p>Sem conteúdo institucional, a tua história fica por contar. A concorrência conta a dela primeiro.</p>
+        </div>
+        <div class="diag-card reveal">
+          <span class="mono">03</span>
+          <h3>Orçamento sem retorno</h3>
+          <p>Já investiste em vídeo e não viste resultado? Raramente é a câmara — é a falta de estratégia por trás.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUÇÃO -->
+  <section class="section section--smoke">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">COMO TRABALHAMOS</span>
+        <h2>Vídeo pensado para vender, não só para bonito</h2>
+      </div>
+      <div class="sol-grid">
+        <div class="sol-card reveal">
+          <div class="sol-icon">◎</div>
+          <h3>Direção com propósito</h3>
+          <p>Cada plano tem uma função: gerar confiança, mostrar prova ou levar à ação.</p>
+        </div>
+        <div class="sol-card reveal">
+          <div class="sol-icon">▣</div>
+          <h3>Entrega sem stress</h3>
+          <p>Do guião ao ficheiro final — tratamos de tudo, tu só apareces em cena (ou nem isso).</p>
+        </div>
+        <div class="sol-card reveal">
+          <div class="sol-icon">▶</div>
+          <h3>Feito para conversão</h3>
+          <p>Formatos otimizados para o teu site, redes sociais e apresentações comerciais.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO -->
+  <section class="section" id="processo">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">O PROCESSO</span>
+        <h2>Do primeiro contacto ao vídeo final</h2>
+      </div>
+      <div class="proc-list">
+        <div class="proc-item reveal">
+          <span class="mono">01 / 05</span>
+          <div><h3>Diagnóstico</h3><p>Chamada de 20 min para perceber objetivo, público e formato.</p></div>
+          <span class="when">DIA 1</span>
+        </div>
+        <div class="proc-item reveal">
+          <span class="mono">02 / 05</span>
+          <div><h3>Proposta</h3><p>Envio do orçamento e plano de produção.</p></div>
+          <span class="when">ATÉ 3 DIAS</span>
+        </div>
+        <div class="proc-item reveal">
+          <span class="mono">03 / 05</span>
+          <div><h3>Pré-produção</h3><p>Guião, moodboard e agenda de filmagem.</p></div>
+          <span class="when">3–5 DIAS</span>
+        </div>
+        <div class="proc-item reveal">
+          <span class="mono">04 / 05</span>
+          <div><h3>Filmagem</h3><p>Produção no local, conforme calendário combinado.</p></div>
+          <span class="when">A CALENDARIZAR</span>
+        </div>
+        <div class="proc-item reveal">
+          <span class="mono">05 / 05</span>
+          <div><h3>Entrega</h3><p>Edição, uma ronda de revisões e ficheiros finais.</p></div>
+          <span class="when">7–10 DIAS ÚTEIS</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFÓLIO (placeholder — Anna: troca pelos teus vídeos reais) -->
+  <section class="section section--smoke" id="portfolio">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">PORTEFÓLIO</span>
+        <h2>Trabalho recente</h2>
+        <p>Uma seleção dos últimos comerciais e conteúdos produzidos pela WillScope.</p>
+      </div>
+      <div class="port-grid">
+        <div class="port-card reveal"><div class="port-thumb t1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Wise</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Esthesis</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Mimosa — 01</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Mimosa — 02</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Puma</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Mini-Novela</span><h4>Restaurante Pikatta</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Ergomotion</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Social Content</span><h4>Restaurante Shifu</h4></div></div>
+        <div class="port-card reveal"><div class="port-thumb t9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div><div class="port-meta"><span class="mono">Comercial</span><h4>Multiplo</h4></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREÇOS -->
+  <section class="section" id="precos">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">INVESTIMENTO</span>
+        <h2>Faixa de preço</h2>
+      </div>
+      <div class="price-hero reveal">
+        <span class="big">400€ – 7.000€</span>
+        <span class="label">Consoante o tipo de projeto, duração e nº de dias de filmagem.</span>
+      </div>
+      <div class="price-grid reveal">
+        <div class="price-card"><span class="mono">Redes Sociais</span><div class="amount">400€–900€</div><p>Por vídeo</p></div>
+        <div class="price-card"><span class="mono">Cobertura de Evento</span><div class="amount">800€–2.000€</div><p>Meio dia a dia completo</p></div>
+        <div class="price-card"><span class="mono">Vídeo Institucional</span><div class="amount">1.500€–3.500€</div><p>Guião a entrega final</p></div>
+        <div class="price-card"><span class="mono">Campanha / Spot</span><div class="amount">2.500€–7.000€</div><p>Produção completa</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULÁRIO / BRIEFING -->
+  <section class="section form-section" id="formulario">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">VAMOS FALAR</span>
+        <h2>Pede o teu orçamento</h2>
+        <p>Preenche o briefing — a nossa equipa responde em até 24h úteis.</p>
+      </div>
+
+      <form class="reveal" id="briefingForm" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="nome">Nome completo <span class="req">*</span></label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="field">
+            <label for="telefone">Telefone <span class="req">*</span></label>
+            <input type="tel" id="telefone" name="telefone" required>
+          </div>
+          <div class="field">
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" name="empresa">
+          </div>
+          <div class="field">
+            <label for="setor">Setor <span class="req">*</span></label>
+            <select id="setor" name="setor" required>
+              <option value="">Seleciona uma opção</option>
+              <option value="hotelaria">Hotelaria</option>
+              <option value="restauracao">Restauração</option>
+              <option value="imobiliario">Imobiliário</option>
+              <option value="eventos">Eventos</option>
+              <option value="retalho">Retalho</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tipoProjeto">Tipo de projeto <span class="req">*</span></label>
+            <select id="tipoProjeto" name="tipoProjeto" required>
+              <option value="">Seleciona uma opção</option>
+              <option value="institucional">Vídeo institucional</option>
+              <option value="spot">Spot publicitário</option>
+              <option value="evento">Cobertura de evento</option>
+              <option value="social">Conteúdo para redes sociais</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="orcamento">Orçamento disponível <span class="req">*</span></label>
+            <div class="budget-field">
+              <select id="orcamento" name="orcamento" required>
+                <option value="">Seleciona uma faixa</option>
+                <option value="ate-500">Até 500€</option>
+                <option value="500-1500">500€ – 1.500€</option>
+                <option value="1500-3500">1.500€ – 3.500€</option>
+                <option value="3500-7000">3.500€ – 7.000€</option>
+                <option value="mais-7000">Mais de 7.000€</option>
+                <option value="nao-defini">Ainda não defini</option>
+              </select>
+            </div>
+            <span class="budget-note">Campo obrigatório — usado para priorizar o atendimento.</span>
+          </div>
+          <div class="field" id="dataEventoField" style="display:none">
+            <label for="dataEvento">Data do evento <span class="req">*</span></label>
+            <input type="date" id="dataEvento" name="dataEvento">
+          </div>
+          <div class="field field--full">
+            <label for="mensagem">Conta-nos sobre o projeto</label>
+            <textarea id="mensagem" name="mensagem" placeholder="Objetivo, referências, local, o que for relevante..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-submit">
+          <button type="submit" class="btn btn--primary">Enviar Pedido</button>
+          <span class="budget-note">Sem compromisso — é só o primeiro passo.</span>
+        </div>
+
+        <div class="form-msg" id="formMsg"></div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
+      <div class="footer-links">
+        <a href="#portfolio">Portefólio</a>
+        <a href="#precos">Preços</a>
+        <a href="#formulario">Contacto</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 WillScope. Produção de vídeo — Lisboa, Portugal.</span>
+      <span class="mono">ola@willscope.pt</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO — edita aqui
+   ============================================================ */
+const CONFIG = {
+  // Cola aqui o URL do Google Apps Script (Web App) — ver willscope-apps-script.gs
+  // para os leads caírem automaticamente numa Google Sheet.
+  LEAD_ENDPOINT: 'https://script.google.com/macros/s/AKfycbwY84tOK2rgetIdIO7-0cFJwUhVhdISmrsFco2mwRbavrvBprAmmrmp5QxoyOQaoSoz/exec',
+
+  // CRITÉRIOS DE QUALIFICAÇÃO ---------------------------------
+  // Abaixo deste valor (em €), o lead é marcado "Não Qualificado"
+  MIN_QUALIFY: 500,
+  // A partir deste valor (em €), prioridade automática "Alta"
+  PRIORITY_THRESHOLD: 1500,
+  // Setores do teu ICP (ideal customer profile) — sobem a prioridade
+  // de "Média" para "Alta" mesmo com orçamento mais baixo
+  PRIORITY_SECTORS: ['hotelaria', 'imobiliario', 'eventos'],
+
+  // PRAZO DE ENTREGA -------------------------------------------
+  // Só usado quando "Tipo de projeto" = Cobertura de evento e a Data do
+  // Evento foi preenchida: sugere automaticamente um "Prazo Combinado"
+  // (prazo de entrega do material editado, diferente da data do evento
+  // em si) = Data do Evento + este número de dias. É só um ponto de
+  // partida — dá pra ajustar à mão na planilha (coluna "Prazo Combinado")
+  // ou depois no painel do CRM, projeto a projeto.
+  PRAZO_ENTREGA_DIAS: 7,
+};
+
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- scrubber de scroll ---------- */
+const scrubber = document.getElementById('scrubber');
+function updateScrubber(){
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  scrubber.style.width = pct + '%';
+}
+window.addEventListener('scroll', updateScrubber, { passive:true });
+
+/* ---------- foco do hero ao carregar ---------- */
+window.addEventListener('load', () => {
+  requestAnimationFrame(() => {
+    document.getElementById('heroContent').classList.add('is-focused');
+  });
+});
+
+/* ---------- timecode decorativo no HUD ---------- */
+(function startTimecode(){
+  const el = document.getElementById('timecode');
+  if(!el) return;
+  if(prefersReduced){ el.textContent = '00:00:00:00'; return; }
+  const start = performance.now();
+  const FPS = 24;
+  setInterval(() => {
+    const elapsedSec = (performance.now() - start) / 1000;
+    const totalFrames = Math.floor(elapsedSec * FPS);
+    const h = Math.floor(totalFrames / (FPS*3600));
+    const m = Math.floor(totalFrames / (FPS*60)) % 60;
+    const s = Math.floor(totalFrames / FPS) % 60;
+    const f = totalFrames % FPS;
+    const pad = n => String(n).padStart(2,'0');
+    el.textContent = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
+  }, 80);
+})();
+
+/* ---------- reveal on scroll (efeito de foco) ---------- */
+const revealEls = document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window){
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+} else {
+  revealEls.forEach(el => el.classList.add('in-view'));
+}
+
+/* ============================================================
+   SISTEMA DE QUALIFICAÇÃO DE LEADS
+   ============================================================ */
+function qualifyLead(setor, orcamentoValue){
+  const floors = {
+    'ate-500': 0,
+    '500-1500': 500,
+    '1500-3500': 1500,
+    '3500-7000': 3500,
+    'mais-7000': 7000,
+  };
+  const floor = (orcamentoValue in floors) ? floors[orcamentoValue] : null;
+
+  let status, prioridade;
+
+  if(floor === null){
+    // "Ainda não defini" -> precisa de qualificação manual
+    status = 'A Validar';
+    prioridade = 'Baixa';
+  } else if(floor < CONFIG.MIN_QUALIFY){
+    // Regra de rejeição automática (nutrir, não descartar)
+    status = 'Não Qualificado';
+    prioridade = 'Baixa';
+  } else if(floor >= CONFIG.PRIORITY_THRESHOLD){
+    status = 'Qualificado';
+    prioridade = 'Alta';
+  } else {
+    status = 'Qualificado';
+    prioridade = 'Média';
+    if(CONFIG.PRIORITY_SECTORS.includes(setor)){
+      prioridade = 'Alta'; // bump por setor prioritário
+    }
+  }
+
+  return { status, prioridade, orcamentoFloor: floor };
+}
+
+function getConfirmationMessage(q){
+  if(q.prioridade === 'Alta'){
+    return '🔥 Obrigado! O teu pedido é prioritário — entramos em contacto ainda hoje.';
+  }
+  if(q.status === 'Não Qualificado'){
+    return 'Obrigado pelo contacto! Vamos analisar o teu pedido com calma e responder em breve.';
+  }
+  if(q.status === 'A Validar'){
+    return 'Obrigado! Vamos ligar para perceber melhor o orçamento disponível para o projeto.';
+  }
+  return 'Obrigado! Entramos em contacto em até 24h úteis.';
+}
+
+// Sugere o "Prazo Combinado" (prazo de ENTREGA do material editado) a
+// partir da Data do Evento, só quando ela existir — nunca inventa uma data
+// pra projetos sem evento. É uma sugestão de piso mínimo; o Will ajusta à
+// mão na planilha ou no painel se o prazo real combinado for outro
+// (ex: até 1 mês inteiro em projetos maiores).
+function suggestPrazoCombinado(dataEvento){
+  if(!dataEvento) return '';
+  const d = new Date(dataEvento + 'T00:00:00');
+  if(isNaN(d.getTime())) return '';
+  d.setDate(d.getDate() + CONFIG.PRAZO_ENTREGA_DIAS);
+  return d.toISOString().slice(0, 10);
+}
+
+const form = document.getElementById('briefingForm');
+const formMsg = document.getElementById('formMsg');
+
+/* ---------- mostra "Data do evento" só quando tipoProjeto = evento ---------- */
+const tipoProjetoSelect = document.getElementById('tipoProjeto');
+const dataEventoField = document.getElementById('dataEventoField');
+const dataEventoInput = document.getElementById('dataEvento');
+function toggleDataEvento(){
+  const isEvento = tipoProjetoSelect.value === 'evento';
+  dataEventoField.style.display = isEvento ? '' : 'none';
+  dataEventoInput.required = isEvento;
+  if(!isEvento) dataEventoInput.value = '';
+}
+tipoProjetoSelect.addEventListener('change', toggleDataEvento);
+toggleDataEvento();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if(!form.checkValidity()){
+    form.reportValidity();
+    return;
+  }
+
+  const data = Object.fromEntries(new FormData(form).entries());
+  const q = qualifyLead(data.setor, data.orcamento);
+  const prazoCombinado = suggestPrazoCombinado(data.dataEvento);
+  const lead = { ...data, ...q, prazoCombinado, timestamp: new Date().toISOString() };
+
+  // guarda uma cópia local de segurança (não perde o lead mesmo sem endpoint)
+  try{
+    const existing = JSON.parse(localStorage.getItem('willscope_leads') || '[]');
+    existing.push(lead);
+    localStorage.setItem('willscope_leads', JSON.stringify(existing));
+  }catch(err){ console.warn('Não foi possível guardar localmente:', err); }
+
+  // envia para o backend (Google Apps Script / Sheets, Zapier, etc.)
+  if(CONFIG.LEAD_ENDPOINT){
+    try{
+      await fetch(CONFIG.LEAD_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lead),
+      });
+    }catch(err){ console.warn('Falha ao enviar lead para o endpoint:', err); }
+  }
+
+  formMsg.textContent = getConfirmationMessage(q);
+  formMsg.classList.add('show');
+  form.reset();
+  toggleDataEvento();
+});
+</script>
+
+</body>
+</html>
