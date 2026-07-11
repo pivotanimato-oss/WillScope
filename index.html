@@ -14,7 +14,11 @@
    NOTAS — o que falta antes de publicar
    1) Secção #portfolio → liga o vídeo real (embed/link) em cada cartão
    2) Secção #faq → revê o texto das respostas se necessário
-   3) No <script> final → define CONFIG.LEAD_ENDPOINT com o URL do
+   3) Vídeo de fundo do hero → sobe o ficheiro para assets/hero-bg.mp4
+      (sem som, 10-20s, loop, leve — ideia é reforçar o texto, não competir)
+   4) Trust marquee → troca os <div>NOME</div> por <div><img src="..."></div>
+      quando tiveres os logos reais (mantém os dois blocos duplicados iguais)
+   5) No <script> final → define CONFIG.LEAD_ENDPOINT com o URL do
       Google Apps Script (mesmo padrão da Lista Casa) para os leads
       caírem numa Google Sheet automaticamente
    ============================================================ */
@@ -124,6 +128,24 @@ img{max-width:100%;display:block;}
   border-bottom:1px solid var(--line);
 }
 .hero .wrap{position:relative;z-index:2;}
+
+/* ---------- vídeo de fundo do hero ---------- */
+.hero-video-wrap{
+  position:absolute;inset:0;z-index:0;overflow:hidden;
+}
+.hero-video-wrap video{
+  width:100%;height:100%;object-fit:cover;
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+.hero-video-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.92) 60%,var(--white));
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-video-wrap video{display:none;}
+}
+
 .hero-scope{
   position:absolute;right:-120px;top:50%;transform:translateY(-50%);
   width:560px;height:560px;opacity:.08;z-index:1;pointer-events:none;
@@ -182,17 +204,35 @@ img{max-width:100%;display:block;}
 .sprocket-band{padding:14px 0;border-bottom:1px solid var(--line);}
 
 /* ---------- trust ---------- */
-.trust{padding:40px 0;border-bottom:1px solid var(--line);}
+/* ---------- trust (marquee infinito) ---------- */
+.trust{padding:40px 0;border-bottom:1px solid var(--line);overflow:hidden;}
 .trust p{
   text-align:center;font-size:12px;color:var(--ink-soft);
   margin-bottom:24px;text-transform:uppercase;letter-spacing:.08em;
 }
-.trust-logos{
-  display:flex;justify-content:center;gap:44px;flex-wrap:wrap;
+.trust-marquee{
+  position:relative;width:100%;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
 }
+.trust-logos{
+  display:flex;align-items:center;gap:64px;width:max-content;
+  animation:trustScroll 26s linear infinite;
+}
+.trust:hover .trust-logos{animation-play-state:paused;}
 .trust-logos div{
   font-family:'Big Shoulders Display',sans-serif;font-weight:800;
-  font-size:20px;color:#C9C3BD;letter-spacing:.03em;
+  font-size:22px;color:#C9C3BD;letter-spacing:.03em;white-space:nowrap;
+  display:flex;align-items:center;
+}
+/* espaço reservado pra logo (troca o texto por <img> depois) */
+.trust-logos div img{height:26px;width:auto;display:block;}
+@keyframes trustScroll{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+@media (prefers-reduced-motion: reduce){
+  .trust-logos{animation:none;}
 }
 
 /* ---------- section shell ---------- */
@@ -450,6 +490,12 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 
   <!-- HERO -->
   <section class="hero" id="hero">
+    <div class="hero-video-wrap">
+      <!-- Troca o src pelo teu vídeo (mp4, sem som, ideal 10-20s em loop, leve) -->
+      <video autoplay muted loop playsinline poster="">
+        <source src="assets/hero-bg.mp4" type="video/mp4">
+      </video>
+    </div>
     <svg class="hero-scope" viewBox="0 0 200 200" aria-hidden="true">
       <circle cx="100" cy="100" r="96" fill="none" stroke="#E63428" stroke-width="1.5"/>
       <circle cx="100" cy="100" r="72" fill="none" stroke="#E63428" stroke-width="1.5"/>
@@ -484,8 +530,11 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
   <section class="trust">
     <div class="wrap">
       <p>Marcas que já confiaram no nosso foco</p>
-      <div class="trust-logos">
-        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div>
+    </div>
+    <div class="trust-marquee">
+      <div class="trust-logos" id="trustLogos">
+        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div><div>ESTHESIS</div><div>PIKATTA</div><div>SHIFU</div><div>SPORTZONE</div>
+        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div><div>ESTHESIS</div><div>PIKATTA</div><div>SHIFU</div><div>SPORTZONE</div>
       </div>
     </div>
   </section>
