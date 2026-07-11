@@ -298,6 +298,62 @@ img{max-width:100%;display:block;}
 }
 .price-card p{font-size:13px;color:var(--ink-soft);margin:0;}
 
+/* ---------- FAQ tipo IA ---------- */
+.faq-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);}
+.faq-item{background:var(--white);}
+.faq-q{
+  width:100%;display:flex;align-items:center;gap:16px;
+  padding:22px 24px;background:none;border:none;cursor:pointer;
+  text-align:left;font-family:'Work Sans',sans-serif;
+}
+.faq-q .faq-icon{
+  flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  background:var(--ink);color:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+  transition:background .2s ease;
+}
+.faq-item.is-open .faq-q .faq-icon{background:var(--red);}
+.faq-q span.q-text{
+  flex:1;font-size:16px;font-weight:600;color:var(--ink);
+}
+.faq-q .faq-caret{
+  flex-shrink:0;width:18px;height:18px;color:var(--ink-soft);
+  transition:transform .25s ease;
+}
+.faq-item.is-open .faq-q .faq-caret{transform:rotate(180deg);}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s ease;
+}
+.faq-item.is-open .faq-a{max-height:400px;}
+.faq-a-inner{
+  padding:0 24px 24px 68px;
+  display:flex;gap:10px;color:var(--ink-soft);font-size:14.5px;line-height:1.65;
+}
+.faq-a-inner .faq-avatar{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),var(--orange));
+  margin-top:2px;
+}
+.faq-a-text{white-space:pre-wrap;}
+.faq-cursor{
+  display:inline-block;width:2px;height:14px;background:var(--red);
+  margin-left:2px;vertical-align:middle;
+  animation:faqBlink .8s step-end infinite;
+}
+.faq-cursor.is-done{display:none;}
+@keyframes faqBlink{50%{opacity:0;}}
+.faq-loading{display:flex;gap:4px;padding-top:2px;}
+.faq-loading span{
+  width:6px;height:6px;border-radius:50%;background:var(--ink-soft);
+  animation:faqDot 1s infinite ease-in-out;
+}
+.faq-loading span:nth-child(2){animation-delay:.15s;}
+.faq-loading span:nth-child(3){animation-delay:.3s;}
+@keyframes faqDot{0%,80%,100%{opacity:.25;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
+
 /* ---------- formulário ---------- */
 .form-section{background:var(--ink);color:var(--white);}
 .form-section .section-head p{color:#C9C1BA;}
@@ -540,7 +596,92 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     </div>
   </section>
 
-  <!-- FORMULÁRIO / BRIEFING -->
+  <!-- FAQ -->
+  <section class="section section--smoke" id="faq">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">DÚVIDAS FREQUENTES</span>
+        <h2>Perguntas & Respostas</h2>
+        <p>Clica numa pergunta para veres a resposta.</p>
+      </div>
+
+      <div class="faq-list reveal" id="faqList">
+
+        <div class="faq-item" data-answer="Depende do tipo de projeto. Um conteúdo para redes sociais costuma ficar pronto em 3 a 5 dias úteis após a filmagem. Vídeos institucionais levam entre 1 e 2 semanas, e campanhas maiores com várias fases podem ir até 3 semanas. Combinamos sempre um prazo fechado no orçamento, antes de começar.">
+          <button class="faq-q" type="button">
+            <span class="faq-icon">?</span>
+            <span class="q-text">Quanto tempo demora do briefing até à entrega final?</span>
+            <svg class="faq-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-a">
+            <div class="faq-a-inner">
+              <span class="faq-avatar"></span>
+              <span class="faq-a-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-answer="A pré-produção é onde definimos guião, referências visuais, locais de filmagem e cronograma do dia. Costuma demorar entre 3 a 7 dias, consoante a complexidade. Nesta fase alinhamos objetivos, tom de comunicação e quaisquer necessidades técnicas antes de marcar a data de filmagem.">
+          <button class="faq-q" type="button">
+            <span class="faq-icon">?</span>
+            <span class="q-text">O que está incluído na fase de pré-produção?</span>
+            <svg class="faq-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-a">
+            <div class="faq-a-inner">
+              <span class="faq-avatar"></span>
+              <span class="faq-a-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-answer="Sim. O guião e o planeamento fazem sempre parte do processo, mesmo em projetos mais pequenos. Não filmamos sem primeiro perceber a história que queremos contar — é isso que separa um vídeo genérico de um conteúdo que realmente comunica e converte.">
+          <button class="faq-q" type="button">
+            <span class="faq-icon">?</span>
+            <span class="q-text">Vocês fazem guião mesmo em projetos mais pequenos?</span>
+            <svg class="faq-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-a">
+            <div class="faq-a-inner">
+              <span class="faq-avatar"></span>
+              <span class="faq-a-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-answer="Trabalhamos com equipamento profissional (Sony FX30, A7IV, estabilização DJI RS3) e cuidamos de todo o processo, do guião à entrega final, sem intermediários. Cada projeto é tratado como uma história para contar, não apenas um vídeo para publicar — o foco está sempre na narrativa e no impacto real para o negócio do cliente.">
+          <button class="faq-q" type="button">
+            <span class="faq-icon">?</span>
+            <span class="q-text">Qual é o diferencial da WillScope?</span>
+            <svg class="faq-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-a">
+            <div class="faq-a-inner">
+              <span class="faq-avatar"></span>
+              <span class="faq-a-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item" data-answer="Depois da filmagem entramos na fase de pós-produção: montagem, color grading e mistura de áudio. Enviamos sempre uma primeira versão para aprovação, e o orçamento já inclui uma ronda de alterações para ajustarmos qualquer detalhe antes da entrega final.">
+          <button class="faq-q" type="button">
+            <span class="faq-icon">?</span>
+            <span class="q-text">Como funciona a fase de pós-produção e revisões?</span>
+            <svg class="faq-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-a">
+            <div class="faq-a-inner">
+              <span class="faq-avatar"></span>
+              <span class="faq-a-text"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
   <section class="section form-section" id="formulario">
     <div class="wrap">
       <div class="section-head reveal">
@@ -634,6 +775,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
       <div class="footer-links">
         <a href="#portfolio">Portfólio</a>
         <a href="#precos">Preços</a>
+        <a href="#faq">FAQ</a>
         <a href="#formulario">Contacto</a>
       </div>
     </div>
@@ -841,6 +983,61 @@ form.addEventListener('submit', async (e) => {
   form.reset();
   toggleDataEvento();
 });
+
+/* ---------- FAQ estilo IA (efeito de digitação) ---------- */
+(function(){
+  const items = document.querySelectorAll('#faqList .faq-item');
+
+  items.forEach(item => {
+    const btn = item.querySelector('.faq-q');
+    const answerEl = item.querySelector('.faq-a-text');
+    const fullText = item.getAttribute('data-answer') || '';
+    let typed = false;      // já escreveu o texto alguma vez?
+    let typing = false;     // está a escrever agora?
+    let typeTimer = null;
+
+    function typeText(){
+      typing = true;
+      answerEl.textContent = '';
+      const cursor = document.createElement('span');
+      cursor.className = 'faq-cursor';
+      answerEl.after(cursor);
+
+      let i = 0;
+      typeTimer = setInterval(() => {
+        answerEl.textContent = fullText.slice(0, i + 1);
+        i++;
+        if(i >= fullText.length){
+          clearInterval(typeTimer);
+          cursor.classList.add('is-done');
+          typing = false;
+          typed = true;
+        }
+      }, 14); // velocidade da "digitação"
+    }
+
+    btn.addEventListener('click', () => {
+      const isOpen = item.classList.contains('is-open');
+
+      // fecha os outros (efeito accordion)
+      items.forEach(other => {
+        if(other !== item) other.classList.remove('is-open');
+      });
+
+      if(isOpen){
+        item.classList.remove('is-open');
+        return;
+      }
+
+      item.classList.add('is-open');
+
+      if(!typed && !typing){
+        // pequeno "delay de geração" antes de começar a escrever
+        setTimeout(typeText, 220);
+      }
+    });
+  });
+})();
 </script>
 
 </body>
