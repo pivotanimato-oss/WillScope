@@ -123,11 +123,14 @@ img{max-width:100%;display:block;}
 /* ---------- hero ---------- */
 .hero{
   position:relative;
-  padding:96px 0 80px;
+  padding:140px 0 120px;
   overflow:hidden;
   border-bottom:1px solid var(--line);
+  min-height:88vh;
+  display:flex;
+  align-items:center;
 }
-.hero .wrap{position:relative;z-index:2;}
+.hero .wrap{position:relative;z-index:2;width:100%;}
 
 /* ---------- vídeo de fundo do hero ---------- */
 .hero-video-wrap{
@@ -188,7 +191,34 @@ img{max-width:100%;display:block;}
 .hero p.sub{
   font-size:19px;color:var(--ink-soft);max-width:540px;margin-bottom:36px;
 }
-.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:44px;}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+
+/* ---------- indicador de scroll ---------- */
+.scroll-cue{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:32px 0 24px;
+  text-decoration:none;
+  background:linear-gradient(180deg,transparent,rgba(21,16,13,.05) 60%,rgba(21,16,13,.09));
+}
+.scroll-cue span{
+  font-size:11px;letter-spacing:.12em;color:var(--ink-soft);
+  text-transform:uppercase;
+}
+.scroll-cue::after{
+  content:'';width:1px;height:26px;
+  background:linear-gradient(180deg,var(--ink-soft),transparent);
+  animation:scrollCueMove 1.8s ease-in-out infinite;
+}
+@keyframes scrollCueMove{
+  0%{opacity:0;transform:translateY(-6px);}
+  40%{opacity:1;}
+  100%{opacity:0;transform:translateY(10px);}
+}
+@media (prefers-reduced-motion: reduce){
+  .scroll-cue::after{animation:none;opacity:.6;}
+}
+
 .trustline{font-size:13px;color:var(--ink-soft);}
 .trustline strong{color:var(--ink);}
 
@@ -476,7 +506,7 @@ select{
   .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr;}
   .hud{display:none;}
   .trust-logos{gap:24px;}
-  .hero{padding:56px 0 60px;}
+  .hero{padding:72px 0 96px;min-height:auto;}
   .section{padding:64px 0;}
 }
 </style>
@@ -516,16 +546,16 @@ select{
         <span>f/2.8 · 24FPS</span>
       </div>
       <div class="hero-content" id="heroContent">
-        <span class="eyebrow mono">PRODUÇÃO DE VÍDEO PARA NEGÓCIOS</span>
         <h1>Se não está <em>em foco</em>,<br>já perdeste o cliente.</h1>
-        <p class="sub">Vídeo institucional, cobertura de eventos e conteúdo para redes sociais — feito para dar nitidez à tua marca e fechar mais negócio.</p>
         <div class="hero-ctas">
           <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
           <a href="#portfolio" class="btn btn--ghost">Ver Portfólio</a>
         </div>
-        <p class="trustline"><strong>★ 4.9/5</strong> avaliação média · <strong>+40</strong> projetos entregues · resposta em <strong>24h</strong></p>
       </div>
     </div>
+    <a href="#trust" class="scroll-cue mono">
+      <span>ARRASTA PARA VER MAIS</span>
+    </a>
   </section>
 
   <div class="sprocket-band"><div class="sprocket">
@@ -533,7 +563,7 @@ select{
   </div></div>
 
   <!-- TRUST -->
-  <section class="trust">
+  <section class="trust" id="trust">
     <div class="wrap">
       <p>Marcas que já confiaram no nosso foco</p>
     </div>
