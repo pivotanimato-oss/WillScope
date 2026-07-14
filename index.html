@@ -510,7 +510,7 @@ select{
 .form-msg.show{display:block;}
 
 /* ---------- footer ---------- */
-.footer{background:#0F0B09;color:#8A817A;padding:48px 0 32px;}
+.footer{background:#0F0B09;color:#8A817A;padding:48px 0 0;overflow:hidden;}
 .footer .sprocket span{background:#241B17;}
 .footer-top{
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;
@@ -518,7 +518,30 @@ select{
 }
 .footer .logo{color:var(--white);}
 .footer-links{display:flex;gap:28px;font-size:14px;flex-wrap:wrap;}
-.footer-bottom{font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-links a{color:#8A817A;text-decoration:none;transition:color .2s ease;}
+.footer-links a:hover{color:var(--white);}
+.footer-bottom{
+  font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  padding-bottom:32px;
+}
+.footer-bottom .back-to-top{color:#8A817A;text-decoration:none;transition:color .2s ease;}
+.footer-bottom .back-to-top:hover{color:var(--white);}
+
+/* ---------- wordmark gigante cortada ---------- */
+.footer-wordmark-wrap{
+  overflow:hidden;position:relative;width:100%;
+  height:clamp(70px,15vw,190px);
+}
+.footer-wordmark-wrap h2{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:100%;text-align:center;margin:0;
+  font-family:'Big Shoulders Display',sans-serif;font-weight:900;
+  font-size:clamp(90px,23vw,300px);line-height:1;
+  letter-spacing:-.01em;
+  color:var(--white);
+  white-space:nowrap;
+}
+.footer-wordmark-wrap h2 span{color:var(--red);}
 
 /* ---------- responsive ---------- */
 @media (max-width:860px){
@@ -1015,7 +1038,11 @@ select{
     <div class="footer-bottom">
       <span>© 2026 WillScope. Produção de vídeo — Lisboa, Portugal.</span>
       <span class="mono">ola@willscope.pt</span>
+      <a href="#hero" class="back-to-top mono">VOLTAR AO TOPO ↑</a>
     </div>
+  </div>
+  <div class="footer-wordmark-wrap" aria-hidden="true">
+    <h2>WILL<span>SCOPE</span></h2>
   </div>
 </footer>
 
