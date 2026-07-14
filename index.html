@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%23E63428' stroke-width='8'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%23E63428'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 
 /* ============================================================
@@ -525,17 +525,25 @@ select{
 .footer-links a:hover{color:var(--white);}
 
 .footer-columns{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:32px;
+  display:grid;grid-template-columns:2fr 1fr;gap:32px;
   padding-bottom:44px;border-bottom:1px solid #241B17;margin-bottom:24px;
 }
-.footer-col{display:flex;flex-direction:column;gap:14px;}
-.footer-col a,.footer-col span{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:13px;letter-spacing:.04em;text-transform:uppercase;
-  color:#8A817A;text-decoration:none;
-  transition:color .2s ease;
+.footer-col{
+  display:flex;flex-direction:column;gap:10px;
+  padding-left:20px;border-left:1px solid #241B17;
 }
-.footer-col a:hover{color:var(--white);}
+.footer-col a,.footer-col span{
+  font-family:'Baloo 2',sans-serif;font-weight:700;
+  font-size:22px;color:var(--white);text-decoration:none;
+  transition:opacity .2s ease;line-height:1.3;
+}
+.footer-col a:hover{opacity:.65;}
+.footer-col--social a,.footer-col--social span{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;
+  font-size:13px;letter-spacing:.03em;color:#8A817A;
+}
+.footer-col--social a::before{content:'→ ';color:var(--red);}
+.footer-col--social a:hover{color:var(--white);}
 
 .footer-bottom{
   font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
@@ -1058,15 +1066,13 @@ select{
         <a href="#faq">FAQ</a>
         <a href="#formulario">Contacto</a>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-col--social">
         <a href="https://instagram.com/willscope" target="_blank" rel="noopener">Instagram</a>
         <a href="https://www.youtube.com/@willscope" target="_blank" rel="noopener">YouTube</a>
         <a href="https://www.linkedin.com/company/willscope" target="_blank" rel="noopener">LinkedIn</a>
-      </div>
-      <div class="footer-col">
-        <a href="mailto:ola@willscope.pt">ola@willscope.pt</a>
+        <a href="mailto:willscopelabs@gmail.com">willscopelabs@gmail.com</a>
         <a href="https://wa.me/351929172857" target="_blank" rel="noopener">+351 929 172 857</a>
-        <span>Lisboa, Portugal</span>
+        <span>→ Lisboa, Portugal</span>
       </div>
     </div>
 
