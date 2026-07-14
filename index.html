@@ -22,6 +22,8 @@
    5) No <script> final → define CONFIG.LEAD_ENDPOINT com o URL do
       Google Apps Script (mesmo padrão da Lista Casa) para os leads
       caírem numa Google Sheet automaticamente
+   6) Rodapé → troca os links de Instagram/YouTube/LinkedIn pelos
+      URLs reais das redes da WillScope (estão com placeholder)
    ============================================================ */
 
 :root{
@@ -513,13 +515,30 @@ select{
 .footer{background:#0F0B09;color:#8A817A;padding:48px 0 0;overflow:hidden;}
 .footer .sprocket span{background:#241B17;}
 .footer-top{
-  display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;
-  padding:36px 0 24px;border-bottom:1px solid #241B17;margin-bottom:24px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;
+  padding:36px 0 24px;border-bottom:1px solid #241B17;margin-bottom:40px;
 }
 .footer .logo{color:var(--white);}
+.footer-tagline{font-size:13px;color:#8A817A;}
 .footer-links{display:flex;gap:28px;font-size:14px;flex-wrap:wrap;}
 .footer-links a{color:#8A817A;text-decoration:none;transition:color .2s ease;}
 .footer-links a:hover{color:var(--white);}
+
+.footer-columns{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:32px;
+  padding-bottom:44px;border-bottom:1px solid #241B17;margin-bottom:24px;
+}
+.footer-col{display:flex;flex-direction:column;gap:12px;}
+.footer-col-title{
+  font-size:10px;color:var(--red);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:4px;
+}
+.footer-col a,.footer-col span{
+  font-size:14px;color:#8A817A;text-decoration:none;
+  transition:color .2s ease;
+}
+.footer-col a:hover{color:var(--white);}
+
 .footer-bottom{
   font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
   padding-bottom:32px;
@@ -550,6 +569,7 @@ select{
   .proc-item .when{grid-column:2;text-align:left;}
   .form-grid{grid-template-columns:1fr;}
   .hero-scope{display:none;}
+  .footer-columns{grid-template-columns:1fr 1fr;}
 }
 @media (max-width:560px){
   .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr;}
@@ -557,6 +577,7 @@ select{
   .trust-logos{gap:24px;}
   .hero{padding:72px 0 96px;min-height:auto;}
   .section{padding:64px 0;}
+  .footer-columns{grid-template-columns:1fr;gap:24px;}
 }
 </style>
 </head>
@@ -1029,15 +1050,32 @@ select{
   <div class="wrap">
     <div class="footer-top">
       <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
-      <div class="footer-links">
+      <span class="footer-tagline">Produção de vídeo para negócios — Lisboa, Portugal.</span>
+    </div>
+
+    <div class="footer-columns">
+      <div class="footer-col">
+        <span class="footer-col-title mono">NAVEGAÇÃO</span>
+        <a href="#hero">Home</a>
         <a href="#portfolio">Portfólio</a>
         <a href="#faq">FAQ</a>
         <a href="#formulario">Contacto</a>
       </div>
+      <div class="footer-col">
+        <span class="footer-col-title mono">REDES SOCIAIS</span>
+        <a href="https://instagram.com/willscope" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.youtube.com/@willscope" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://www.linkedin.com/company/willscope" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-col-title mono">CONTACTO</span>
+        <a href="mailto:ola@willscope.pt">ola@willscope.pt</a>
+        <span>Lisboa, Portugal</span>
+      </div>
     </div>
+
     <div class="footer-bottom">
-      <span>© 2026 WillScope. Produção de vídeo — Lisboa, Portugal.</span>
-      <span class="mono">ola@willscope.pt</span>
+      <span>© 2026 WillScope. Todos os direitos reservados.</span>
       <a href="#hero" class="back-to-top mono">VOLTAR AO TOPO ↑</a>
     </div>
   </div>
