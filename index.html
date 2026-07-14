@@ -525,21 +525,25 @@ select{
 .footer-links a:hover{color:var(--white);}
 
 .footer-columns{
-  display:grid;grid-template-columns:2fr 1fr;gap:32px;
-  padding-bottom:44px;border-bottom:1px solid #241B17;margin-bottom:24px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;
+  padding:12px 0 48px;border-bottom:1px solid #241B17;margin-bottom:24px;
 }
 .footer-col{
-  display:flex;flex-direction:column;gap:10px;
+  display:flex;flex-direction:column;gap:2px;
+  border-left:1px solid #241B17;padding-left:26px;
 }
 .footer-col a,.footer-col span{
   font-family:'Baloo 2',sans-serif;font-weight:700;
-  font-size:22px;color:var(--white);text-decoration:none;
-  transition:opacity .2s ease;line-height:1.3;
+  font-size:clamp(26px,3.6vw,42px);color:var(--white);text-decoration:none;
+  transition:color .2s ease,opacity .2s ease;line-height:1.55;
 }
-.footer-col a:hover{opacity:.65;}
+.footer-col a:hover{color:var(--red);}
+.footer-col--social{
+  border-left:none;align-items:flex-end;text-align:right;padding-left:0;padding-top:8px;gap:12px;
+}
 .footer-col--social a,.footer-col--social span{
   font-family:'IBM Plex Mono',monospace;font-weight:600;
-  font-size:13px;letter-spacing:.03em;color:#8A817A;
+  font-size:13px;letter-spacing:.03em;color:#8A817A;line-height:1.4;
 }
 .footer-col--social a::before{content:'→ ';color:var(--red);}
 .footer-col--social a:hover{color:var(--white);}
@@ -574,7 +578,7 @@ select{
   .proc-item .when{grid-column:2;text-align:left;}
   .form-grid{grid-template-columns:1fr;}
   .hero-scope{display:none;}
-  .footer-columns{grid-template-columns:1fr 1fr;}
+  .footer-col{padding-left:20px;}
 }
 @media (max-width:560px){
   .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr;}
@@ -582,7 +586,8 @@ select{
   .trust-logos{gap:24px;}
   .hero{padding:72px 0 96px;min-height:auto;}
   .section{padding:64px 0;}
-  .footer-columns{grid-template-columns:1fr;gap:24px;}
+  .footer-columns{flex-direction:column;gap:36px;}
+  .footer-col--social{align-items:flex-start;text-align:left;border-left:1px solid #241B17;padding-left:26px;padding-top:0;}
 }
 </style>
 </head>
@@ -1067,11 +1072,10 @@ select{
       </div>
       <div class="footer-col footer-col--social">
         <a href="https://instagram.com/willscope" target="_blank" rel="noopener">Instagram</a>
-        <a href="https://www.youtube.com/@willscope" target="_blank" rel="noopener">YouTube</a>
         <a href="https://www.linkedin.com/company/willscope" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.youtube.com/@willscope" target="_blank" rel="noopener">YouTube</a>
         <a href="mailto:willscopelabs@gmail.com">willscopelabs@gmail.com</a>
         <a href="https://wa.me/351929172857" target="_blank" rel="noopener">+351 929 172 857</a>
-        <span>→ Lisboa, Portugal</span>
       </div>
     </div>
 
