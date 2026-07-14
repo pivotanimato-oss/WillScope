@@ -15,8 +15,12 @@
    1) Copia este ficheiro e renomeia (ex: puma.html, esthesis.html...)
    2) Troca o <title>, o PROJ_CLIENTE, PROJ_CATEGORIA, PROJ_DESCRICAO
    3) Troca o gradiente do .proj-hero (usa a cor .t1 até .t9 do index)
-   4) Adiciona/remove blocos .video-block conforme o nº de vídeos
-   5) O link "← Voltar ao portfólio" já aponta para ../index.html#portfolio
+   4) Troca o src do <video id="projHeroVideo"> pelo vídeo real do projeto
+      (sobe o ficheiro em assets/projetos/nome-do-projeto.mp4)
+      — ao clicar no hero, o texto/degradê somem e o vídeo toca com som;
+        clicando de novo volta ao estado inicial (toggle)
+   5) Adiciona/remove blocos .video-block conforme o nº de vídeos
+   6) O link "← Voltar ao portfólio" já aponta para ../index.html#portfolio
    ============================================================ */
 
 :root{
@@ -93,21 +97,47 @@ h1,h2,h3{
 }
 .back-link:hover{color:var(--red);}
 
-/* hero do projeto */
+/* hero do projeto (player com toggle) */
 .proj-hero{
   margin-top:24px;
   aspect-ratio:16/7;border-radius:var(--radius);
   position:relative;overflow:hidden;
   display:flex;align-items:flex-end;
   background:linear-gradient(135deg,#B0221A,#FF7A1A);
+  cursor:pointer;
+}
+.proj-hero video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:0;
 }
 .proj-hero::after{
-  content:'';position:absolute;inset:0;
+  content:'';position:absolute;inset:0;z-index:1;
   background:linear-gradient(0deg,rgba(21,16,13,.65),transparent 60%);
+  transition:opacity .4s ease;
 }
-.proj-hero-content{position:relative;z-index:2;padding:32px;color:var(--white);}
+.proj-hero-content{
+  position:relative;z-index:2;padding:32px;color:var(--white);
+  transition:opacity .4s ease,transform .4s ease;
+}
 .proj-hero-content .mono{font-size:11px;text-transform:uppercase;opacity:.85;}
 .proj-hero-content h1{font-size:clamp(32px,6vw,64px);margin-top:8px;}
+
+/* estado "vídeo limpo" — texto e degradê escondidos, só o vídeo aparece */
+.proj-hero.is-playing::after{opacity:0;}
+.proj-hero.is-playing .proj-hero-content{opacity:0;transform:translateY(8px);pointer-events:none;}
+
+/* dica de play, some assim que começa a tocar */
+.proj-hero-hint{
+  position:absolute;top:20px;right:20px;z-index:2;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;
+  background:rgba(21,16,13,.45);backdrop-filter:blur(4px);
+  color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:11px;
+  letter-spacing:.04em;text-transform:uppercase;
+  transition:opacity .3s ease;
+}
+.proj-hero-hint svg{width:14px;height:14px;}
+.proj-hero.is-playing .proj-hero-hint{opacity:0;}
 
 /* corpo */
 .proj-body{
@@ -182,7 +212,15 @@ h1,h2,h3{
   <a href="../index.html#portfolio" class="back-link mono">← VOLTAR AO PORTFÓLIO</a>
 
   <!-- HERO — troca o gradiente (usa uma das cores t1-t9 do index.html) e o texto -->
-  <div class="proj-hero" style="background:linear-gradient(135deg,#B0221A,#FF7A1A);">
+  <!-- Troca o src do video pelo vídeo real do projeto (mesmo ficheiro do #portfolio da home, ou um específico) -->
+  <div class="proj-hero" id="projHero" style="background:linear-gradient(135deg,#B0221A,#FF7A1A);">
+    <video id="projHeroVideo" muted loop playsinline preload="metadata">
+      <source src="../assets/projetos/wise.mp4" type="video/mp4">
+    </video>
+    <div class="proj-hero-hint mono">
+      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+      <span>Clica para ver o vídeo</span>
+    </div>
     <div class="proj-hero-content">
       <span class="mono">Comercial</span>
       <h1>Wise</h1>
@@ -276,7 +314,7 @@ h1,h2,h3{
       <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
       <div class="footer-links">
         <a href="../index.html#portfolio">Portfólio</a>
-        <a href="../index.html#precos">Preços</a>
+        <a href="../index.html#faq">FAQ</a>
         <a href="../index.html#formulario">Contacto</a>
       </div>
     </div>
@@ -286,6 +324,33 @@ h1,h2,h3{
     </div>
   </div>
 </footer>
+
+<script>
+(function(){
+  const hero = document.getElementById('projHero');
+  const video = document.getElementById('projHeroVideo');
+  if(!hero || !video) return;
+
+  hero.addEventListener('click', () => {
+    const isPlaying = hero.classList.contains('is-playing');
+
+    if(isPlaying){
+      // volta o texto/degradê e pausa o vídeo
+      hero.classList.remove('is-playing');
+      video.pause();
+    }else{
+      // esconde texto/degradê e toca o vídeo com som
+      hero.classList.add('is-playing');
+      video.muted = false;
+      video.play().catch(() => {
+        // se o browser bloquear o som automático, toca mudo como fallback
+        video.muted = true;
+        video.play();
+      });
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
