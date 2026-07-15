@@ -252,7 +252,6 @@ img{max-width:100%;display:block;}
   display:flex;align-items:center;gap:64px;width:max-content;
   animation:trustScroll 26s linear infinite;
 }
-.trust:hover .trust-logos{animation-play-state:paused;}
 .trust-logos div{
   font-family:'Big Shoulders Display',sans-serif;font-weight:800;
   font-size:22px;color:#C9C3BD;letter-spacing:.03em;white-space:nowrap;
@@ -653,7 +652,6 @@ select{
     </div>
     <div class="trust-marquee">
       <div class="trust-logos" id="trustLogos">
-        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div><div>ESTHESIS</div><div>PIKATTA</div><div>SHIFU</div><div>SPORTZONE</div>
         <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div><div>ESTHESIS</div><div>PIKATTA</div><div>SHIFU</div><div>SPORTZONE</div>
       </div>
     </div>
@@ -1122,6 +1120,47 @@ const CONFIG = {
 };
 
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- trust marquee: reconstrói garantindo que nunca fique curto ---------- */
+(function initTrustMarquee(){
+  const track = document.getElementById('trustLogos');
+  if(!track) return;
+  const container = track.closest('.trust-marquee');
+  if(!container) return;
+
+  // guarda o conjunto original (uma vez só) pra poder reconstruir sempre a partir dele
+  if(!track.dataset.baseItems){
+    track.dataset.baseItems = track.innerHTML;
+  }
+
+  function build(){
+    // conjunto "limpo", sem duplicações anteriores
+    track.innerHTML = track.dataset.baseItems;
+    const containerWidth = container.clientWidth || window.innerWidth;
+    const setWidth = track.scrollWidth;
+    if(!setWidth) return;
+
+    // repete o conjunto o quanto for preciso pra cobrir pelo menos
+    // a largura visível — sem isso, em ecrãs largos os itens acabam
+    // antes da animação completar o ciclo e a rodinha "quebra"
+    let html = track.dataset.baseItems;
+    let width = setWidth;
+    while(width < containerWidth + 100){
+      html += track.dataset.baseItems;
+      width += setWidth;
+    }
+    // duplica tudo mais uma vez: é o que permite o loop via translateX(-50%)
+    track.innerHTML = html + html;
+  }
+
+  build();
+
+  let resizeT;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(build, 200);
+  });
+})();
 
 /* ---------- portfólio: só toca vídeo com hover ---------- */
 document.querySelectorAll('.port-card').forEach(card => {
