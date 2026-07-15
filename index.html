@@ -327,7 +327,10 @@ img{max-width:100%;display:block;}
 }
 .port-viewall:hover{opacity:.6;}
 
-.port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start;}
+.port-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  grid-auto-rows:110px;gap:20px;grid-auto-flow:dense;
+}
 .port-card{
   display:block;border-radius:18px;
   overflow:hidden;background:var(--ink);text-decoration:none;color:inherit;
@@ -337,14 +340,22 @@ img{max-width:100%;display:block;}
   transform:translateY(-4px);
   box-shadow:0 16px 32px rgba(21,16,13,.18);
 }
+/* tamanhos variados — cada card ocupa uma combinação diferente de colunas/linhas,
+   pra quebrar a grade e o mosaico não repetir o mesmo padrão a cada 3 itens */
+.port-card.s-a{grid-column:span 4;grid-row:span 3;}
+.port-card.s-b{grid-column:span 2;grid-row:span 3;}
+.port-card.s-c{grid-column:span 2;grid-row:span 2;}
+.port-card.s-d{grid-column:span 3;grid-row:span 2;}
+.port-card.s-e{grid-column:span 2;grid-row:span 2;}
+.port-card.s-f{grid-column:span 3;grid-row:span 3;}
+.port-card.s-g{grid-column:span 3;grid-row:span 2;}
+.port-card.s-h{grid-column:span 2;grid-row:span 2;}
+.port-card.s-i{grid-column:span 4;grid-row:span 2;}
 .port-thumb{
   position:relative;overflow:hidden;
-  aspect-ratio:1/1;
+  width:100%;height:100%;
   color:rgba(255,255,255,.9);
 }
-.port-thumb.ratio-16-9{aspect-ratio:16/9;}
-.port-thumb.ratio-3-4{aspect-ratio:3/4;}
-.port-thumb.ratio-1-1{aspect-ratio:1/1;}
 .port-thumb video{
   display:block;position:absolute;inset:0;
   width:100%;height:100%;object-fit:cover;
@@ -576,7 +587,11 @@ select{
 
 /* ---------- responsive ---------- */
 @media (max-width:860px){
-  .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr 1fr;}
+  .diag-grid,.sol-grid,.price-grid{grid-template-columns:1fr 1fr;}
+  .port-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}
+  .port-card.s-a,.port-card.s-i{grid-column:span 2;grid-row:span 2;}
+  .port-card.s-b,.port-card.s-f{grid-column:span 1;grid-row:span 3;}
+  .port-card.s-c,.port-card.s-d,.port-card.s-e,.port-card.s-g,.port-card.s-h{grid-column:span 1;grid-row:span 2;}
   .proc-item{grid-template-columns:60px 1fr;}
   .proc-item .when{grid-column:2;text-align:left;}
   .form-grid{grid-template-columns:1fr;}
@@ -584,7 +599,9 @@ select{
   .footer-col{padding-left:20px;}
 }
 @media (max-width:560px){
-  .diag-grid,.sol-grid,.price-grid,.port-grid{grid-template-columns:1fr;}
+  .diag-grid,.sol-grid,.price-grid{grid-template-columns:1fr;}
+  .port-grid{grid-template-columns:1fr;grid-auto-rows:220px;}
+  .port-card{grid-column:span 1 !important;grid-row:span 1 !important;}
   .hud{display:none;}
   .trust-logos{gap:24px;}
   .hero{padding:72px 0 96px;min-height:auto;}
@@ -759,8 +776,8 @@ select{
         <a href="#portfolio" class="port-viewall mono">VER TODOS →</a>
       </div>
       <div class="port-grid">
-        <a href="projetos/wise.html" class="port-card reveal">
-          <div class="port-thumb t1 ratio-16-9">
+        <a href="projetos/wise.html" class="port-card reveal s-a">
+          <div class="port-thumb t1">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/v1784125359/WISE_AD_GERAL_INGLES_ikeu44.mp4" type="video/mp4">
             </video>
@@ -771,8 +788,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/esthesis.html" class="port-card reveal">
-          <div class="port-thumb t2 ratio-3-4">
+        <a href="projetos/esthesis.html" class="port-card reveal s-b">
+          <div class="port-thumb t2">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/esthesis.mp4" type="video/mp4">
             </video>
@@ -783,8 +800,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/mimosa-01.html" class="port-card reveal">
-          <div class="port-thumb t3 ratio-1-1">
+        <a href="projetos/mimosa-01.html" class="port-card reveal s-c">
+          <div class="port-thumb t3">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/mimosa-01.mp4" type="video/mp4">
             </video>
@@ -795,8 +812,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/mimosa-02.html" class="port-card reveal">
-          <div class="port-thumb t4 ratio-16-9">
+        <a href="projetos/mimosa-02.html" class="port-card reveal s-d">
+          <div class="port-thumb t4">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/mimosa-02.mp4" type="video/mp4">
             </video>
@@ -807,8 +824,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/puma.html" class="port-card reveal">
-          <div class="port-thumb t5 ratio-3-4">
+        <a href="projetos/puma.html" class="port-card reveal s-e">
+          <div class="port-thumb t5">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/puma.mp4" type="video/mp4">
             </video>
@@ -819,8 +836,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/pikatta.html" class="port-card reveal">
-          <div class="port-thumb t6 ratio-1-1">
+        <a href="projetos/pikatta.html" class="port-card reveal s-f">
+          <div class="port-thumb t6">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/pikatta.mp4" type="video/mp4">
             </video>
@@ -831,8 +848,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/ergomotion.html" class="port-card reveal">
-          <div class="port-thumb t7 ratio-16-9">
+        <a href="projetos/ergomotion.html" class="port-card reveal s-g">
+          <div class="port-thumb t7">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/ergomotion.mp4" type="video/mp4">
             </video>
@@ -843,8 +860,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/shifu.html" class="port-card reveal">
-          <div class="port-thumb t8 ratio-3-4">
+        <a href="projetos/shifu.html" class="port-card reveal s-h">
+          <div class="port-thumb t8">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/shifu.mp4" type="video/mp4">
             </video>
@@ -855,8 +872,8 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/multiplo.html" class="port-card reveal">
-          <div class="port-thumb t9 ratio-1-1">
+        <a href="projetos/multiplo.html" class="port-card reveal s-i">
+          <div class="port-thumb t9">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/multiplo.mp4" type="video/mp4">
             </video>
