@@ -125,6 +125,7 @@ h1,h2,h3{
 /* estado "vídeo limpo" — texto e degradê escondidos, só o vídeo aparece */
 .proj-hero.is-playing::after{opacity:0;}
 .proj-hero.is-playing .proj-hero-content{opacity:0;transform:translateY(8px);pointer-events:none;}
+.proj-hero.is-playing video{object-fit:contain;}
 
 /* dica de play, some assim que começa a tocar */
 .proj-hero-hint{
@@ -324,23 +325,72 @@ h1,h2,h3{
   const video = document.getElementById('projHeroVideo');
   if(!hero || !video) return;
 
+  const originalBackground = hero.style.background;
+  let nativeRatio = null; // largura/altura do vídeo real
+  const CLOSED_RATIO = 16 / 7;
+
+  function heightForRatio(ratio){
+    return hero.getBoundingClientRect().width / ratio;
+  }
+
+  // a altura passa a ser controlada só por JS (px), nunca pelo aspect-ratio do
+  // CSS — assim os dois nunca disputam o tamanho da caixa no meio da transição
+  function setHeightInstant(px){
+    hero.style.height = px + 'px';
+  }
+
+  // congela a altura atual e só depois aplica a nova, para o browser
+  // ter um ponto de partida real e animar a transição em vez de saltar
+  function animateHeightTo(targetHeight){
+    hero.style.height = hero.getBoundingClientRect().height + 'px';
+    void hero.offsetHeight; // força reflow
+    hero.style.height = targetHeight + 'px';
+  }
+
+  function goToNativeAspect(){
+    if(video.videoWidth && video.videoHeight){
+      nativeRatio = video.videoWidth / video.videoHeight;
+      animateHeightTo(heightForRatio(nativeRatio));
+    }
+  }
+
+  // fixa a altura equivalente ao 16/7 assim que o script carrega, antes de
+  // qualquer interação, para nunca depender do aspect-ratio do CSS
+  setHeightInstant(heightForRatio(CLOSED_RATIO));
+
   hero.addEventListener('click', () => {
     const isPlaying = hero.classList.contains('is-playing');
 
     if(isPlaying){
-      // volta o texto/degradê e pausa o vídeo
+      // volta o texto/degradê, pausa o vídeo e anima de volta ao crop original
       hero.classList.remove('is-playing');
       video.pause();
+      hero.style.background = originalBackground;
+      animateHeightTo(heightForRatio(CLOSED_RATIO));
+      nativeRatio = null;
     }else{
       // esconde texto/degradê e toca o vídeo com som
       hero.classList.add('is-playing');
+      hero.style.background = '#000';
       video.muted = false;
       video.play().catch(() => {
         // se o browser bloquear o som automático, toca mudo como fallback
         video.muted = true;
         video.play();
       });
+      // anima até o aspect ratio real assim que soubermos as dimensões do vídeo
+      if(video.readyState >= 1){
+        goToNativeAspect();
+      }else{
+        video.addEventListener('loadedmetadata', goToNativeAspect, { once:true });
+      }
     }
+  });
+
+  // mantém a proporção correta (tocando ou fechada) se a janela for redimensionada
+  window.addEventListener('resize', () => {
+    const ratio = (hero.classList.contains('is-playing') && nativeRatio) ? nativeRatio : CLOSED_RATIO;
+    hero.style.height = heightForRatio(ratio) + 'px';
   });
 })();
 </script>
