@@ -105,6 +105,7 @@ h1,h2,h3{
   display:flex;align-items:flex-end;
   background:linear-gradient(135deg,#B0221A,#FF7A1A);
   cursor:pointer;
+  transition:height .6s cubic-bezier(.4,0,.2,1), background .5s ease;
 }
 .proj-hero video{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
@@ -333,10 +334,34 @@ h1,h2,h3{
   if(!hero || !video) return;
 
   const originalBackground = hero.style.background;
+  let nativeRatio = null; // largura/altura do vídeo real
 
-  function useNativeAspect(){
+  function heightForRatio(ratio){
+    return hero.getBoundingClientRect().width / ratio;
+  }
+
+  // congela a altura atual e só depois aplica a nova, para o browser
+  // ter um ponto de partida real e animar a transição em vez de saltar
+  function animateHeightTo(targetHeight){
+    hero.style.height = hero.getBoundingClientRect().height + 'px';
+    void hero.offsetHeight; // força reflow
+    hero.style.height = targetHeight + 'px';
+  }
+
+  function releaseHeightAfterTransition(){
+    function clear(e){
+      if(e.propertyName === 'height'){
+        hero.style.height = '';
+        hero.removeEventListener('transitionend', clear);
+      }
+    }
+    hero.addEventListener('transitionend', clear);
+  }
+
+  function goToNativeAspect(){
     if(video.videoWidth && video.videoHeight){
-      hero.style.aspectRatio = video.videoWidth + ' / ' + video.videoHeight;
+      nativeRatio = video.videoWidth / video.videoHeight;
+      animateHeightTo(heightForRatio(nativeRatio));
     }
   }
 
@@ -344,26 +369,36 @@ h1,h2,h3{
     const isPlaying = hero.classList.contains('is-playing');
 
     if(isPlaying){
-      // volta o texto/degradê, o crop original e pausa o vídeo
+      // volta o texto/degradê, pausa o vídeo e anima de volta ao crop original
       hero.classList.remove('is-playing');
       video.pause();
       hero.style.background = originalBackground;
-      hero.style.aspectRatio = '';
+      animateHeightTo(heightForRatio(16 / 7));
+      releaseHeightAfterTransition();
+      nativeRatio = null;
     }else{
-      // esconde texto/degradê, ajusta o container ao aspect ratio real do vídeo e toca com som
+      // esconde texto/degradê e toca o vídeo com som
       hero.classList.add('is-playing');
       hero.style.background = '#000';
-      if(video.readyState >= 1){
-        useNativeAspect();
-      }else{
-        video.addEventListener('loadedmetadata', useNativeAspect, { once:true });
-      }
       video.muted = false;
       video.play().catch(() => {
         // se o browser bloquear o som automático, toca mudo como fallback
         video.muted = true;
         video.play();
       });
+      // anima até o aspect ratio real assim que soubermos as dimensões do vídeo
+      if(video.readyState >= 1){
+        goToNativeAspect();
+      }else{
+        video.addEventListener('loadedmetadata', goToNativeAspect, { once:true });
+      }
+    }
+  });
+
+  // mantém o aspect ratio correto se a janela for redimensionada durante a reprodução
+  window.addEventListener('resize', () => {
+    if(hero.classList.contains('is-playing') && nativeRatio){
+      hero.style.height = heightForRatio(nativeRatio) + 'px';
     }
   });
 })();
