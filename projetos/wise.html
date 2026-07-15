@@ -125,15 +125,15 @@ h1,h2,h3{
 /* estado "vídeo limpo" — texto e degradê escondidos, só o vídeo aparece */
 .proj-hero.is-playing::after{opacity:0;}
 .proj-hero.is-playing .proj-hero-content{opacity:0;transform:translateY(8px);pointer-events:none;}
+.proj-hero.is-playing video{object-fit:contain;}
 
 /* dica de play, some assim que começa a tocar */
 .proj-hero-hint{
-  position:absolute;top:20px;right:20px;z-index:2;
+  position:absolute;bottom:24px;right:24px;z-index:2;
   display:flex;align-items:center;gap:8px;
-  padding:8px 14px;border-radius:999px;
-  background:rgba(21,16,13,.45);backdrop-filter:blur(4px);
   color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:11px;
   letter-spacing:.04em;text-transform:uppercase;
+  text-shadow:0 1px 4px rgba(21,16,13,.6);
   transition:opacity .3s ease;
 }
 .proj-hero-hint svg{width:14px;height:14px;}
@@ -332,16 +332,32 @@ h1,h2,h3{
   const video = document.getElementById('projHeroVideo');
   if(!hero || !video) return;
 
+  const originalBackground = hero.style.background;
+
+  function useNativeAspect(){
+    if(video.videoWidth && video.videoHeight){
+      hero.style.aspectRatio = video.videoWidth + ' / ' + video.videoHeight;
+    }
+  }
+
   hero.addEventListener('click', () => {
     const isPlaying = hero.classList.contains('is-playing');
 
     if(isPlaying){
-      // volta o texto/degradê e pausa o vídeo
+      // volta o texto/degradê, o crop original e pausa o vídeo
       hero.classList.remove('is-playing');
       video.pause();
+      hero.style.background = originalBackground;
+      hero.style.aspectRatio = '';
     }else{
-      // esconde texto/degradê e toca o vídeo com som
+      // esconde texto/degradê, ajusta o container ao aspect ratio real do vídeo e toca com som
       hero.classList.add('is-playing');
+      hero.style.background = '#000';
+      if(video.readyState >= 1){
+        useNativeAspect();
+      }else{
+        video.addEventListener('loadedmetadata', useNativeAspect, { once:true });
+      }
       video.muted = false;
       video.play().catch(() => {
         // se o browser bloquear o som automático, toca mudo como fallback
