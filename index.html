@@ -12,10 +12,10 @@
 
 /* ============================================================
    NOTAS — o que falta antes de publicar
-   1) Secção #portfolio → sobe os vídeos reais em assets/portfolio/
+   1) Secção #portfolio → sobe os vídeos reais no Cloudinary, pasta willscope/portfolio/{slug}.mp4
       (mesmo nome do slug, ex: wise.mp4, puma.mp4 — mudos, loop, leves)
    2) Secção #faq → revê o texto das respostas se necessário
-   3) Vídeo de fundo do hero → sobe o ficheiro para assets/hero-bg.mp4
+   3) Vídeo de fundo do hero → sobe o ficheiro no Cloudinary em willscope/hero/hero-bg.mp4
       (sem som, 10-20s, loop, leve — ideia é reforçar o texto, não competir)
    4) Trust marquee → troca os <div>NOME</div> por <div><img src="..."></div>
       quando tiveres os logos reais (mantém os dois blocos duplicados iguais)
@@ -609,7 +609,7 @@ select{
     <div class="hero-video-wrap">
       <!-- Troca o src pelo teu vídeo (mp4, sem som, ideal 10-20s em loop, leve) -->
       <video autoplay muted loop playsinline poster="">
-        <source src="assets/hero-bg.mp4" type="video/mp4">
+        <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/hero/hero-bg.mp4" type="video/mp4">
       </video>
     </div>
     <svg class="hero-scope" viewBox="0 0 200 200" aria-hidden="true">
@@ -760,7 +760,7 @@ select{
         <a href="projetos/wise.html" class="port-card reveal">
           <div class="port-thumb t1">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/wise.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/wise.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>
@@ -772,7 +772,7 @@ select{
         <a href="projetos/esthesis.html" class="port-card reveal">
           <div class="port-thumb t2">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/esthesis.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/esthesis.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>
@@ -784,7 +784,7 @@ select{
         <a href="projetos/mimosa-01.html" class="port-card reveal">
           <div class="port-thumb t3">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/mimosa-01.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/mimosa-01.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>
@@ -796,7 +796,7 @@ select{
         <a href="projetos/mimosa-02.html" class="port-card reveal">
           <div class="port-thumb t4">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/mimosa-02.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/mimosa-02.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>
@@ -808,7 +808,7 @@ select{
         <a href="projetos/puma.html" class="port-card reveal">
           <div class="port-thumb t5">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/puma.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/puma.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>
@@ -820,7 +820,7 @@ select{
         <a href="projetos/pikatta.html" class="port-card reveal">
           <div class="port-thumb t6">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/pikatta.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/pikatta.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Mini-Novela</span>
@@ -832,7 +832,7 @@ select{
         <a href="projetos/ergomotion.html" class="port-card reveal">
           <div class="port-thumb t7">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/ergomotion.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/ergomotion.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>
@@ -844,7 +844,7 @@ select{
         <a href="projetos/shifu.html" class="port-card reveal">
           <div class="port-thumb t8">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/shifu.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/shifu.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Social Content</span>
@@ -856,7 +856,7 @@ select{
         <a href="projetos/multiplo.html" class="port-card reveal">
           <div class="port-thumb t9">
             <video autoplay muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="assets/portfolio/multiplo.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/multiplo.mp4" type="video/mp4">
             </video>
             <div class="port-meta">
               <span class="mono">Comercial</span>

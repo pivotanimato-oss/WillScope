@@ -16,7 +16,7 @@
    2) Troca o <title>, o PROJ_CLIENTE, PROJ_CATEGORIA, PROJ_DESCRICAO
    3) Troca o gradiente do .proj-hero (usa a cor .t1 até .t9 do index)
    4) Troca o src do <video id="projHeroVideo"> pelo vídeo real do projeto
-      (sobe o ficheiro em assets/projetos/nome-do-projeto.mp4)
+      (sobe o ficheiro no Cloudinary em willscope/projetos/nome-do-projeto.mp4)
       — ao clicar no hero, o texto/degradê somem e o vídeo toca com som;
         clicando de novo volta ao estado inicial (toggle)
    5) Adiciona/remove blocos .video-block conforme o nº de vídeos
@@ -215,7 +215,7 @@ h1,h2,h3{
   <!-- Troca o src do video pelo vídeo real do projeto (mesmo ficheiro do #portfolio da home, ou um específico) -->
   <div class="proj-hero" id="projHero" style="background:linear-gradient(135deg,#5B534E,#FF7A1A);">
     <video id="projHeroVideo" muted loop playsinline preload="metadata">
-      <source src="../assets/projetos/multiplo.mp4" type="video/mp4">
+      <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/projetos/multiplo.mp4" type="video/mp4">
     </video>
     <div class="proj-hero-hint mono">
       <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
