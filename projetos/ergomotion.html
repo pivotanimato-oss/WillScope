@@ -122,6 +122,7 @@ h1,h2,h3{
   object-fit:cover;
   filter:blur(70px) brightness(.34) saturate(1.15);
   transform:scale(1.04);
+  background:#000;
 }
 .proj-hero-scrim{
   position:absolute;inset:0;
@@ -284,9 +285,7 @@ body{background:#0a0a0a;color:#f3f0ec;}
   </div>
 
   <div class="proj-hero" id="projHero">
-    <video class="proj-hero-bg" muted playsinline preload="metadata">
-      <source src="https://ashejla1hc2lmbll.public.blob.vercel-storage.com/Eliana%20-%20English%20Subtitles%20-%20ERGOMOTION%20comp.mp4" type="video/mp4">
-    </video>
+    <canvas class="proj-hero-bg" aria-hidden="true"></canvas>
     <div class="proj-hero-scrim"></div>
     <div class="proj-hero-stage">
       <video id="projHeroVideo" playsinline preload="auto">
@@ -412,10 +411,28 @@ body{background:#0a0a0a;color:#f3f0ec;}
   const bgVideo = document.querySelector('.proj-hero-bg');
   if(!video) return;
 
-  if(bgVideo){
-    bgVideo.addEventListener('loadedmetadata', () => {
-      try{ bgVideo.currentTime = Math.min(0.5, (bgVideo.duration || 1) / 2); }catch(e){}
-    }, { once:true });
+  if(bgVideo && bgVideo.tagName === 'CANVAS'){
+    const bgCtx = bgVideo.getContext('2d');
+    function drawBgFrame(){
+      if(!video.videoWidth) return;
+      if(bgVideo.width !== video.videoWidth || bgVideo.height !== video.videoHeight){
+        const maxDim = 240;
+        const scale = Math.min(1, maxDim / Math.max(video.videoWidth, video.videoHeight));
+        bgVideo.width = Math.max(1, Math.round(video.videoWidth * scale));
+        bgVideo.height = Math.max(1, Math.round(video.videoHeight * scale));
+      }
+      try{ bgCtx.drawImage(video, 0, 0, bgVideo.width, bgVideo.height); }catch(e){}
+    }
+    video.addEventListener('loadeddata', drawBgFrame, { once:true });
+    let bgInterval = null;
+    video.addEventListener('play', () => {
+      if(bgInterval) return;
+      bgInterval = setInterval(drawBgFrame, 350);
+    });
+    video.addEventListener('pause', () => {
+      if(bgInterval){ clearInterval(bgInterval); bgInterval = null; }
+    });
+    video.addEventListener('seeked', drawBgFrame);
   }
 
   const playBtn = document.querySelector('.cc-play');
