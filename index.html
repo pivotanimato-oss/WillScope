@@ -311,10 +311,11 @@ img{max-width:100%;display:block;}
 .trust-logos div{
   font-family:'Big Shoulders Display',sans-serif;font-weight:800;
   font-size:22px;color:#C9C3BD;letter-spacing:.03em;white-space:nowrap;
-  display:flex;align-items:center;
+  display:flex;align-items:center;justify-content:center;
+  height:44px;width:120px;flex-shrink:0;
 }
 /* espaço reservado pra logo (troca o texto por <img> depois) */
-.trust-logos div img{height:36px;width:auto;display:block;}
+.trust-logos div img{max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;}
 @keyframes trustScroll{
   from{transform:translateX(0);}
   to{transform:translateX(-50%);}
