@@ -92,10 +92,10 @@ img{max-width:100%;display:block;}
 /* ---------- topbar ---------- */
 .topbar{
   position:sticky;top:0;z-index:100;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line);
+  background:transparent;
+  border-bottom:none;
 }
+.topbar .logo{text-shadow:0 1px 10px rgba(0,0,0,.35);}
 .topbar .wrap{
   display:flex;align-items:center;justify-content:space-between;
   height:64px;
@@ -618,7 +618,6 @@ select{
 <header class="topbar">
   <div class="wrap">
     <div class="logo">WILL<span>SCOPE</span></div>
-    <a href="#formulario" class="btn btn--primary btn--sm">Pedir Orçamento</a>
   </div>
 </header>
 
