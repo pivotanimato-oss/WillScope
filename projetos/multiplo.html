@@ -144,6 +144,7 @@ h1,h2,h3{
   box-shadow:0 50px 120px rgba(0,0,0,.65);
   border-radius:6px;overflow:hidden;
   background:#000;
+  box-sizing:border-box;
 }
 .proj-hero-stage video{
   position:absolute;inset:0;
@@ -445,6 +446,23 @@ body{background:#0a0a0a;color:#f3f0ec;}
   const video = document.getElementById('projHeroVideo');
   const bgVideo = document.querySelector('.proj-hero-bg');
   if(!video) return;
+
+  // trava a altura do stage exatamente igual à altura do hero (px reais),
+  // pra nunca sobrar espaço entre o vídeo nítido e o fundo desfocado
+  const heroEl = document.getElementById('projHero');
+  const stageEl = document.querySelector('.proj-hero-stage');
+  function sizeHeroStage(){
+    if(!heroEl || !stageEl) return;
+    const h = heroEl.clientHeight;
+    if(!h) return;
+    const maxW = Math.min(window.innerWidth * 0.92, 1600);
+    const w = Math.min(h * (16 / 9), maxW);
+    stageEl.style.height = h + 'px';
+    stageEl.style.width = w + 'px';
+  }
+  sizeHeroStage();
+  window.addEventListener('resize', sizeHeroStage);
+  window.addEventListener('orientationchange', sizeHeroStage);
 
   if(bgVideo && bgVideo.tagName === 'CANVAS'){
     const bgCtx = bgVideo.getContext('2d');
