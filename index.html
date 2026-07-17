@@ -36,7 +36,8 @@
   --orange:#FF7A1A;
   --line:#E9E5E1;
   --radius:2px;
-  --max:1180px;
+  --max:none;
+  --gutter:clamp(20px, 5vw, 96px);
 }
 
 *,*::before,*::after{box-sizing:border-box;}
@@ -68,7 +69,7 @@ h1,h2,h3{
 a{color:inherit;}
 img{max-width:100%;display:block;}
 
-.wrap{max-width:var(--max);margin:0 auto;padding:0 28px;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
 
 /* ---------- scroll scrubber (linha de progresso, como o cursor de um editor de vídeo) ---------- */
 #scrubber{
@@ -228,7 +229,7 @@ img{max-width:100%;display:block;}
 /* ---------- sprocket divider (tira de película) ---------- */
 .sprocket{
   display:flex;justify-content:space-between;
-  padding:0 28px;max-width:var(--max);margin:0 auto;
+  padding:0 var(--gutter);max-width:var(--max);margin:0 auto;
 }
 .sprocket span{
   width:7px;height:7px;border-radius:50%;
