@@ -147,7 +147,9 @@ img{max-width:100%;display:block;}
 }
 .hero-video-wrap::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.92) 60%,var(--white));
+  background:
+    linear-gradient(100deg, rgba(8,6,5,.78) 0%, rgba(8,6,5,.48) 32%, rgba(8,6,5,.14) 58%, rgba(8,6,5,0) 78%),
+    linear-gradient(0deg, rgba(8,6,5,.6) 0%, rgba(8,6,5,0) 42%);
 }
 @media (prefers-reduced-motion: reduce){
   .hero-video-wrap video{display:none;}
@@ -161,6 +163,7 @@ img{max-width:100%;display:block;}
   display:flex;justify-content:space-between;
   font-size:11px;color:var(--ink-soft);margin-bottom:56px;
 }
+.hero .hud{color:rgba(255,255,255,.78);}
 .hud span{display:flex;align-items:center;gap:6px;}
 .rec-dot{
   width:8px;height:8px;border-radius:50%;background:var(--red);
@@ -178,6 +181,38 @@ img{max-width:100%;display:block;}
 @media (prefers-reduced-motion: reduce){
   .hero-content{transition:none;opacity:1;filter:none;transform:none;}
 }
+
+/* ---------- kicker oscilante (We are / Bringing) ---------- */
+.hero-kicker{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;
+}
+.hero-kicker::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  animation:pulse 1.6s infinite ease-in-out;
+  flex:none;
+}
+@media (prefers-reduced-motion: reduce){.hero-kicker::before{animation:none;}}
+.hero-kicker-track{
+  position:relative;height:1.3em;overflow:hidden;
+}
+.hero-kicker-word{
+  position:absolute;left:0;top:0;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  white-space:nowrap;
+  transform:translateY(120%);opacity:0;
+  transition:transform .6s cubic-bezier(.65,0,.35,1), opacity .5s ease;
+}
+.hero-kicker-word.is-active{transform:translateY(0);opacity:1;}
+.hero-kicker-word.is-exit{transform:translateY(-120%);opacity:0;}
+@media (prefers-reduced-motion: reduce){
+  .hero-kicker-word{transition:none;}
+}
+
 .eyebrow{
   font-size:12px;color:var(--red);font-weight:600;margin-bottom:18px;
   display:inline-block;
@@ -187,6 +222,7 @@ img{max-width:100%;display:block;}
   line-height:0.98;
   margin-bottom:26px;
 }
+.hero h1{color:#fff;}
 .hero h1 em{
   font-style:normal;
   background:linear-gradient(90deg,var(--red),var(--orange));
@@ -196,6 +232,8 @@ img{max-width:100%;display:block;}
   font-size:19px;color:var(--ink-soft);max-width:540px;margin-bottom:36px;
 }
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+.hero .btn--ghost{border-color:rgba(255,255,255,.7);color:#fff;}
+.hero .btn--ghost:hover{background:#fff;color:var(--ink);}
 
 /* ---------- indicador de scroll ---------- */
 .scroll-cue{
@@ -209,11 +247,13 @@ img{max-width:100%;display:block;}
   font-size:11px;letter-spacing:.12em;color:var(--ink-soft);
   text-transform:uppercase;
 }
+.hero .scroll-cue span{color:rgba(255,255,255,.75);}
 .scroll-cue::after{
   content:'';width:1px;height:26px;
   background:linear-gradient(180deg,var(--ink-soft),transparent);
   animation:scrollCueMove 1.8s ease-in-out infinite;
 }
+.hero .scroll-cue::after{background:linear-gradient(180deg,rgba(255,255,255,.75),transparent);}
 @keyframes scrollCueMove{
   0%{opacity:0;transform:translateY(-6px);}
   40%{opacity:1;}
@@ -638,7 +678,13 @@ select{
         <span>f/2.8 · 24FPS</span>
       </div>
       <div class="hero-content" id="heroContent">
-        <h1>Se não está <em>em foco</em>,<br>já perdeste o cliente.</h1>
+        <div class="hero-kicker">
+          <div class="hero-kicker-track" id="heroKicker">
+            <span class="hero-kicker-word is-active">We are</span>
+            <span class="hero-kicker-word">Bringing</span>
+          </div>
+        </div>
+        <h1>The <em>right eyes</em>,<br>to your brand.</h1>
         <div class="hero-ctas">
           <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
           <a href="#portfolio" class="btn btn--ghost">Ver Portfólio</a>
@@ -1166,6 +1212,27 @@ window.addEventListener('load', () => {
     document.getElementById('heroContent').classList.add('is-focused');
   });
 });
+
+/* ---------- kicker oscilante do hero (We are / Bringing) ---------- */
+(function heroKicker(){
+  const track = document.getElementById('heroKicker');
+  if(!track) return;
+  const words = [...track.querySelectorAll('.hero-kicker-word')];
+  if(words.length < 2) return;
+  if(prefersReduced) return;
+  let current = words.findIndex(w => w.classList.contains('is-active'));
+  if(current < 0) current = 0;
+  setInterval(() => {
+    const next = (current + 1) % words.length;
+    words[current].classList.remove('is-active');
+    words[current].classList.add('is-exit');
+    words[next].classList.remove('is-exit');
+    void words[next].offsetWidth;
+    words[next].classList.add('is-active');
+    setTimeout(() => { words[current].classList.remove('is-exit'); }, 650);
+    current = next;
+  }, 2600);
+})();
 
 /* ---------- timecode decorativo no HUD ---------- */
 (function startTimecode(){
