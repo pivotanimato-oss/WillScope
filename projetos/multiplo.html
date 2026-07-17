@@ -120,18 +120,26 @@ h1,h2,h3{
 .proj-hero-bg{
   position:absolute;inset:-8%;width:116%;height:116%;
   object-fit:cover;
-  filter:blur(70px) brightness(.34) saturate(1.15);
+  filter:blur(0px) brightness(1) saturate(1.1);
+  transition:filter .5s ease;
   transform:scale(1.04);
   background:#000;
 }
+.proj-hero.is-playing .proj-hero-bg{
+  filter:blur(22px) brightness(.7) saturate(1.15);
+}
 .proj-hero-scrim{
   position:absolute;inset:0;
-  background:radial-gradient(ellipse at center,rgba(0,0,0,.2) 0%,rgba(0,0,0,.72) 100%);
+  background:radial-gradient(ellipse at center,rgba(0,0,0,0) 0%,rgba(0,0,0,.18) 100%);
+  transition:background .5s ease;
+}
+.proj-hero.is-playing .proj-hero-scrim{
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.08) 0%,rgba(0,0,0,.42) 100%);
 }
 .proj-hero-stage{
   position:relative;z-index:2;
   width:min(92vw,1600px);
-  aspect-ratio:21/9;
+  aspect-ratio:16/9;
   max-height:76vh;
   box-shadow:0 50px 120px rgba(0,0,0,.65);
   border-radius:6px;overflow:hidden;
@@ -291,7 +299,7 @@ body{background:#0a0a0a;color:#f3f0ec;}
     <canvas class="proj-hero-bg" aria-hidden="true"></canvas>
     <div class="proj-hero-scrim"></div>
     <div class="proj-hero-stage">
-      <video id="projHeroVideo" playsinline preload="auto">
+      <video id="projHeroVideo" playsinline preload="auto" crossorigin="anonymous">
         <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284794/GERAL_HORIZONTAL_1_dkj8de.mp4" type="video/mp4">
       </video>
       <div class="proj-hero-controls">
@@ -496,8 +504,9 @@ body{background:#0a0a0a;color:#f3f0ec;}
     else{ video.pause(); }
   }
   playBtn.addEventListener('click', togglePlay);
-  video.addEventListener('play', () => setPlayingIcon(true));
-  video.addEventListener('pause', () => setPlayingIcon(false));
+  const heroEl = document.getElementById('projHero');
+  video.addEventListener('play', () => { setPlayingIcon(true); if(heroEl) heroEl.classList.add('is-playing'); });
+  video.addEventListener('pause', () => { setPlayingIcon(false); if(heroEl) heroEl.classList.remove('is-playing'); });
 
   video.addEventListener('loadedmetadata', () => {
     durEl.textContent = fmt(video.duration);
