@@ -93,10 +93,19 @@ img{max-width:100%;display:block;}
 /* ---------- topbar ---------- */
 .topbar{
   position:sticky;top:0;z-index:100;
+  background:transparent;
+  backdrop-filter:none;
+  border-bottom:1px solid transparent;
+  transition:background .35s ease, backdrop-filter .35s ease, border-color .35s ease;
+}
+.topbar.is-scrolled{
   background:rgba(255,255,255,.92);
   backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line);
+  border-bottom-color:var(--line);
 }
+.topbar .logo{transition:color .35s ease;}
+.topbar:not(.is-scrolled) .logo{color:#fff;}
+.topbar:not(.is-scrolled) .logo span{color:var(--orange);}
 .topbar .wrap{
   display:flex;align-items:center;justify-content:space-between;
   height:64px;
@@ -665,19 +674,7 @@ select{
         <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/v1784320237/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
       </video>
     </div>
-    <svg class="hero-scope" viewBox="0 0 200 200" aria-hidden="true">
-      <circle cx="100" cy="100" r="96" fill="none" stroke="#E63428" stroke-width="1.5"/>
-      <circle cx="100" cy="100" r="72" fill="none" stroke="#E63428" stroke-width="1.5"/>
-      <circle cx="100" cy="100" r="48" fill="none" stroke="#FF7A1A" stroke-width="1.5"/>
-      <line x1="100" y1="0" x2="100" y2="200" stroke="#E63428" stroke-width="1"/>
-      <line x1="0" y1="100" x2="200" y2="100" stroke="#E63428" stroke-width="1"/>
-    </svg>
     <div class="wrap">
-      <div class="hud mono">
-        <span>WILLSCOPE™ · LISBOA</span>
-        <span><span class="rec-dot"></span> REC <span id="timecode">00:00:00:00</span></span>
-        <span>f/2.8 · 24FPS</span>
-      </div>
       <div class="hero-content" id="heroContent">
         <div class="hero-kicker">
           <div class="hero-kicker-track" id="heroKicker">
@@ -1206,6 +1203,21 @@ function updateScrubber(){
   scrubber.style.width = pct + '%';
 }
 window.addEventListener('scroll', updateScrubber, { passive:true });
+
+/* ---------- topbar transparente sobre o hero ---------- */
+(function toggleTopbarOnHero(){
+  const topbar = document.querySelector('.topbar');
+  const hero = document.getElementById('hero');
+  if(!topbar || !hero) return;
+  if(!('IntersectionObserver' in window)){
+    topbar.classList.add('is-scrolled');
+    return;
+  }
+  const io = new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('is-scrolled', !entry.isIntersecting);
+  }, { rootMargin: '-64px 0px 0px 0px', threshold: 0 });
+  io.observe(hero);
+})();
 
 /* ---------- foco do hero ao carregar ---------- */
 window.addEventListener('load', () => {
