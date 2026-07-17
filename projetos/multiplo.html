@@ -210,6 +210,9 @@ h1,h2,h3{
   display:flex;align-items:center;justify-content:center;
 }
 .video-embed iframe{width:100%;height:100%;border:0;display:block;}
+.video-embed video{width:100%;height:100%;object-fit:cover;display:block;background:#000;}
+.video-grid{grid-template-columns:1fr;}
+@media (min-width:820px){ .video-grid{grid-template-columns:1fr 1fr;} }
 .video-caption{padding:16px 20px;}
 .video-caption .mono{font-size:10px;color:var(--red);text-transform:uppercase;}
 .video-caption p{margin:6px 0 0;color:var(--ink-soft);font-size:14px;}
@@ -289,7 +292,7 @@ body{background:#0a0a0a;color:#f3f0ec;}
     <div class="proj-hero-scrim"></div>
     <div class="proj-hero-stage">
       <video id="projHeroVideo" playsinline preload="auto">
-        <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/projetos/multiplo.mp4" type="video/mp4">
+        <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284794/GERAL_HORIZONTAL_1_dkj8de.mp4" type="video/mp4">
       </video>
       <div class="proj-hero-controls">
         <button type="button" class="cc-btn cc-play" aria-label="Play/Pausa">
@@ -356,26 +359,51 @@ body{background:#0a0a0a;color:#f3f0ec;}
 
       <div class="video-block">
         <div class="video-embed">
-          <!-- Troca o src pelo link real do YouTube/Vimeo (formato embed) -->
-          <iframe src="https://www.youtube.com/embed/VIDEO_ID" title="Multiplo — Vídeo principal" allowfullscreen></iframe>
+          <video controls playsinline preload="metadata">
+            <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284792/GYMWEAR_1_dhmo41.mp4" type="video/mp4">
+          </video>
         </div>
         <div class="video-caption">
-          <span class="mono">Versão principal</span>
+          <span class="mono">Gymwear</span>
           <p>Uma marca, várias histórias.</p>
         </div>
       </div>
 
-      <!-- Exemplo de um segundo vídeo — apaga se não precisar
       <div class="video-block">
         <div class="video-embed">
-          <iframe src="https://www.youtube.com/embed/VIDEO_ID_2" title="Wise — Corte redes sociais" allowfullscreen></iframe>
+          <video controls playsinline preload="metadata">
+            <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284785/ATLETICO_1_amofgx.mp4" type="video/mp4">
+          </video>
         </div>
         <div class="video-caption">
-          <span class="mono">Corte vertical</span>
-          <p>Versão adaptada para Instagram e TikTok.</p>
+          <span class="mono">Atlético</span>
+          <p>Uma marca, várias histórias.</p>
         </div>
       </div>
-      -->
+
+      <div class="video-block">
+        <div class="video-embed">
+          <video controls playsinline preload="metadata">
+            <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284776/CORRIDA_INTENSA_1_vl2jbm.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-caption">
+          <span class="mono">Corrida intensa</span>
+          <p>Uma marca, várias histórias.</p>
+        </div>
+      </div>
+
+      <div class="video-block">
+        <div class="video-embed">
+          <video controls playsinline preload="metadata">
+            <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284776/CASUAL_CORRIDA_cevlbz.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-caption">
+          <span class="mono">Casual corrida</span>
+          <p>Uma marca, várias histórias.</p>
+        </div>
+      </div>
 
     </div>
   </div>
