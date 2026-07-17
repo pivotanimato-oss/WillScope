@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WillScope — Produção de Vídeo</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='none' stroke='%23E63428' stroke-width='8'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%23E63428'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
@@ -36,7 +38,8 @@
   --orange:#FF7A1A;
   --line:#E9E5E1;
   --radius:2px;
-  --max:1180px;
+  --max:none;
+  --gutter:clamp(20px, 5vw, 96px);
 }
 
 *,*::before,*::after{box-sizing:border-box;}
@@ -68,7 +71,7 @@ h1,h2,h3{
 a{color:inherit;}
 img{max-width:100%;display:block;}
 
-.wrap{max-width:var(--max);margin:0 auto;padding:0 28px;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
 
 /* ---------- scroll scrubber (linha de progresso, como o cursor de um editor de vídeo) ---------- */
 #scrubber{
@@ -93,12 +96,24 @@ img{max-width:100%;display:block;}
 .topbar{
   position:sticky;top:0;z-index:100;
   background:transparent;
-  border-bottom:none;
+  backdrop-filter:none;
+  border-bottom:1px solid transparent;
+  transition:background .35s ease, backdrop-filter .35s ease, border-color .35s ease;
 }
-.topbar .logo{text-shadow:0 1px 10px rgba(0,0,0,.35);}
+.topbar.is-scrolled{
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(6px);
+  border-bottom-color:var(--line);
+}
+.topbar .logo-mark{transition:filter .35s ease;}
+.topbar:not(.is-scrolled) .logo-mark{filter:none;}
+.topbar.is-scrolled .logo-mark{filter:brightness(0);}
 .topbar .wrap{
   display:flex;align-items:center;justify-content:space-between;
   height:64px;
+}
+.logo-mark{
+  height:34px;width:auto;display:block;
 }
 .logo{
   font-family:'Big Shoulders Display',sans-serif;
@@ -146,7 +161,9 @@ img{max-width:100%;display:block;}
 }
 .hero-video-wrap::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(255,255,255,.92) 60%,var(--white));
+  background:
+    linear-gradient(100deg, rgba(8,6,5,.78) 0%, rgba(8,6,5,.48) 32%, rgba(8,6,5,.14) 58%, rgba(8,6,5,0) 78%),
+    linear-gradient(0deg, rgba(8,6,5,.6) 0%, rgba(8,6,5,0) 42%);
 }
 @media (prefers-reduced-motion: reduce){
   .hero-video-wrap video{display:none;}
@@ -160,6 +177,7 @@ img{max-width:100%;display:block;}
   display:flex;justify-content:space-between;
   font-size:11px;color:var(--ink-soft);margin-bottom:56px;
 }
+.hero .hud{color:rgba(255,255,255,.78);}
 .hud span{display:flex;align-items:center;gap:6px;}
 .rec-dot{
   width:8px;height:8px;border-radius:50%;background:var(--red);
@@ -177,6 +195,39 @@ img{max-width:100%;display:block;}
 @media (prefers-reduced-motion: reduce){
   .hero-content{transition:none;opacity:1;filter:none;transform:none;}
 }
+
+/* ---------- kicker oscilante (We are / Bringing) ---------- */
+.hero-kicker{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;
+}
+.hero-kicker::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  animation:pulse 1.6s infinite ease-in-out;
+  flex:none;
+}
+@media (prefers-reduced-motion: reduce){.hero-kicker::before{animation:none;}}
+.hero-kicker-track{
+  position:relative;height:1.3em;width:118px;overflow:hidden;
+  flex:none;
+}
+.hero-kicker-word{
+  position:absolute;left:0;top:0;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--red),var(--orange));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  white-space:nowrap;
+  transform:translateY(120%);opacity:0;
+  transition:transform .6s cubic-bezier(.65,0,.35,1), opacity .5s ease;
+}
+.hero-kicker-word.is-active{transform:translateY(0);opacity:1;}
+.hero-kicker-word.is-exit{transform:translateY(-120%);opacity:0;}
+@media (prefers-reduced-motion: reduce){
+  .hero-kicker-word{transition:none;}
+}
+
 .eyebrow{
   font-size:12px;color:var(--red);font-weight:600;margin-bottom:18px;
   display:inline-block;
@@ -186,6 +237,7 @@ img{max-width:100%;display:block;}
   line-height:0.98;
   margin-bottom:26px;
 }
+.hero h1{color:#fff;}
 .hero h1 em{
   font-style:normal;
   background:linear-gradient(90deg,var(--red),var(--orange));
@@ -195,6 +247,8 @@ img{max-width:100%;display:block;}
   font-size:19px;color:var(--ink-soft);max-width:540px;margin-bottom:36px;
 }
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+.hero .btn--ghost{border-color:rgba(255,255,255,.7);color:#fff;}
+.hero .btn--ghost:hover{background:#fff;color:var(--ink);}
 
 /* ---------- indicador de scroll ---------- */
 .scroll-cue{
@@ -208,11 +262,13 @@ img{max-width:100%;display:block;}
   font-size:11px;letter-spacing:.12em;color:var(--ink-soft);
   text-transform:uppercase;
 }
+.hero .scroll-cue span{color:rgba(255,255,255,.75);}
 .scroll-cue::after{
   content:'';width:1px;height:26px;
   background:linear-gradient(180deg,var(--ink-soft),transparent);
   animation:scrollCueMove 1.8s ease-in-out infinite;
 }
+.hero .scroll-cue::after{background:linear-gradient(180deg,rgba(255,255,255,.75),transparent);}
 @keyframes scrollCueMove{
   0%{opacity:0;transform:translateY(-6px);}
   40%{opacity:1;}
@@ -228,7 +284,7 @@ img{max-width:100%;display:block;}
 /* ---------- sprocket divider (tira de película) ---------- */
 .sprocket{
   display:flex;justify-content:space-between;
-  padding:0 28px;max-width:var(--max);margin:0 auto;
+  padding:0 var(--gutter);max-width:var(--max);margin:0 auto;
 }
 .sprocket span{
   width:7px;height:7px;border-radius:50%;
@@ -326,13 +382,12 @@ img{max-width:100%;display:block;}
   transition:opacity .2s ease;
 }
 .port-viewall:hover{opacity:.6;}
-
 .port-grid{
-  display:grid;grid-template-columns:repeat(6,1fr);
-  grid-auto-rows:110px;gap:20px;grid-auto-flow:dense;
+  columns:3;column-gap:20px;
 }
 .port-card{
-  display:block;border-radius:18px;
+  display:block;border-radius:18px;width:100%;
+  margin-bottom:20px;break-inside:avoid;
   overflow:hidden;background:var(--ink);text-decoration:none;color:inherit;
   transition:transform .3s ease,box-shadow .3s ease;
 }
@@ -340,20 +395,16 @@ img{max-width:100%;display:block;}
   transform:translateY(-4px);
   box-shadow:0 16px 32px rgba(21,16,13,.18);
 }
-/* tamanhos variados — cada card ocupa uma combinação diferente de colunas/linhas,
-   pra quebrar a grade e o mosaico não repetir o mesmo padrão a cada 3 itens */
-.port-card.s-a{grid-column:span 4;grid-row:span 3;}
-.port-card.s-b{grid-column:span 2;grid-row:span 3;}
-.port-card.s-c{grid-column:span 2;grid-row:span 2;}
-.port-card.s-d{grid-column:span 3;grid-row:span 2;}
-.port-card.s-e{grid-column:span 2;grid-row:span 2;}
-.port-card.s-f{grid-column:span 3;grid-row:span 3;}
-.port-card.s-g{grid-column:span 3;grid-row:span 2;}
-.port-card.s-h{grid-column:span 2;grid-row:span 2;}
-.port-card.s-i{grid-column:span 4;grid-row:span 2;}
+/* proporções padrão — 16:9, 1:1 e 4:3, atribuídas aleatoriamente aos
+   cards via JS (ver script no fim da secção PORTFÓLIO) pra o mosaico
+   nunca ficar previsível/igual entre si, sem nunca ficar esticado ou
+   demasiado estreito */
+.port-thumb.r-169{aspect-ratio:16/9;}
+.port-thumb.r-11{aspect-ratio:1/1;}
+.port-thumb.r-43{aspect-ratio:4/3;}
 .port-thumb{
   position:relative;overflow:hidden;
-  width:100%;height:100%;
+  width:100%;
   color:rgba(255,255,255,.9);
 }
 .port-thumb video{
@@ -588,10 +639,7 @@ select{
 /* ---------- responsive ---------- */
 @media (max-width:860px){
   .diag-grid,.sol-grid,.price-grid{grid-template-columns:1fr 1fr;}
-  .port-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}
-  .port-card.s-a,.port-card.s-i{grid-column:span 2;grid-row:span 2;}
-  .port-card.s-b,.port-card.s-f{grid-column:span 1;grid-row:span 3;}
-  .port-card.s-c,.port-card.s-d,.port-card.s-e,.port-card.s-g,.port-card.s-h{grid-column:span 1;grid-row:span 2;}
+  .port-grid{columns:2;}
   .proc-item{grid-template-columns:60px 1fr;}
   .proc-item .when{grid-column:2;text-align:left;}
   .form-grid{grid-template-columns:1fr;}
@@ -600,8 +648,7 @@ select{
 }
 @media (max-width:560px){
   .diag-grid,.sol-grid,.price-grid{grid-template-columns:1fr;}
-  .port-grid{grid-template-columns:1fr;grid-auto-rows:220px;}
-  .port-card{grid-column:span 1 !important;grid-row:span 1 !important;}
+  .port-grid{columns:1;}
   .hud{display:none;}
   .trust-logos{gap:24px;}
   .hero{padding:72px 0 96px;min-height:auto;}
@@ -617,7 +664,7 @@ select{
 
 <header class="topbar">
   <div class="wrap">
-    <div class="logo">WILL<span>SCOPE</span></div>
+    <img class="logo-mark" src="assets/logo-mark.png" alt="WillScope">
   </div>
 </header>
 
@@ -628,24 +675,18 @@ select{
     <div class="hero-video-wrap">
       <!-- Troca o src pelo teu vídeo (mp4, sem som, ideal 10-20s em loop, leve) -->
       <video autoplay muted loop playsinline poster="">
-        <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/hero/hero-bg.mp4" type="video/mp4">
+        <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/v1784320237/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
       </video>
     </div>
-    <svg class="hero-scope" viewBox="0 0 200 200" aria-hidden="true">
-      <circle cx="100" cy="100" r="96" fill="none" stroke="#E63428" stroke-width="1.5"/>
-      <circle cx="100" cy="100" r="72" fill="none" stroke="#E63428" stroke-width="1.5"/>
-      <circle cx="100" cy="100" r="48" fill="none" stroke="#FF7A1A" stroke-width="1.5"/>
-      <line x1="100" y1="0" x2="100" y2="200" stroke="#E63428" stroke-width="1"/>
-      <line x1="0" y1="100" x2="200" y2="100" stroke="#E63428" stroke-width="1"/>
-    </svg>
     <div class="wrap">
-      <div class="hud mono">
-        <span>WILLSCOPE™ · LISBOA</span>
-        <span><span class="rec-dot"></span> REC <span id="timecode">00:00:00:00</span></span>
-        <span>f/2.8 · 24FPS</span>
-      </div>
       <div class="hero-content" id="heroContent">
-        <h1>Se não está <em>em foco</em>,<br>já perdeste o cliente.</h1>
+        <div class="hero-kicker">
+          <div class="hero-kicker-track" id="heroKicker">
+            <span class="hero-kicker-word is-active">We are</span>
+            <span class="hero-kicker-word">Bringing</span>
+          </div>
+        </div>
+        <h1>The <em>right eyes</em>,<br>to your brand.</h1>
         <div class="hero-ctas">
           <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
           <a href="#portfolio" class="btn btn--ghost">Ver Portfólio</a>
@@ -668,37 +709,115 @@ select{
     </div>
     <div class="trust-marquee">
       <div class="trust-logos" id="trustLogos">
-        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div><div>ESTHESIS</div><div>PIKATTA</div><div>SHIFU</div><div>SPORTZONE</div>
+        <div>PUMA</div><div>WISE</div><div>MIMOSA</div><div>ERGOMOTION</div><div>MULTIPLO</div><div>PIKATTA</div><div>SHIFU</div><div>SPORTZONE</div>
       </div>
     </div>
   </section>
 
-  <!-- DIAGNÓSTICO -->
-  <section class="section" id="diagnostico">
+  <section class="section section--smoke" id="portfolio">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow mono">O PROBLEMA</span>
-        <h2>O que está a travar o teu negócio</h2>
+      <div class="port-head-row reveal">
+        <div class="section-head">
+          <span class="eyebrow mono">PORTFÓLIO</span>
+          <h2>Trabalho recente</h2>
+        </div>
+        <a href="#portfolio" class="port-viewall mono">VER TODOS →</a>
       </div>
-      <div class="diag-grid">
-        <div class="diag-card reveal">
-          <span class="mono">01</span>
-          <h3>O telemóvel já não chega</h3>
-          <p>Vídeo feito à pressa transmite uma imagem amadora — e afasta exatamente os clientes que pagam mais.</p>
-        </div>
-        <div class="diag-card reveal">
-          <span class="mono">02</span>
-          <h3>Ninguém sabe o que fazes</h3>
-          <p>Sem conteúdo institucional, a tua história fica por contar. A concorrência conta a dela primeiro.</p>
-        </div>
-        <div class="diag-card reveal">
-          <span class="mono">03</span>
-          <h3>Orçamento sem retorno</h3>
-          <p>Já investiste em vídeo e não viste resultado? Raramente é a câmara — é a falta de estratégia por trás.</p>
-        </div>
+      <div class="port-grid">
+        <a href="projetos/wise.html" class="port-card reveal">
+          <div class="port-thumb t1">
+            <video muted loop playsinline preload="metadata" width="800" height="1000">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784125359/WISE_AD_GERAL_INGLES_ikeu44.mp4" type="video/mp4">
+            </video>
+            <div class="port-meta">
+              <span class="mono">Comercial</span>
+              <h4>Wise</h4>
+              <p class="tagline">Confiança em cada transferência</p>
+            </div>
+          </div>
+        </a>
+        <a href="projetos/mimosa-01.html" class="port-card reveal">
+          <div class="port-thumb t3">
+            <video muted loop playsinline preload="metadata" width="800" height="1000">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284836/Descomplica_horizontal_1_fgl4ij.mp4" type="video/mp4">
+            </video>
+            <div class="port-meta">
+              <span class="mono">Comercial</span>
+              <h4>Mimosa | Mimosa Proteína</h4>
+              <p class="tagline">Sabor em close-up</p>
+            </div>
+          </div>
+        </a>
+        <a href="projetos/mimosa-02.html" class="port-card reveal">
+          <div class="port-thumb t4">
+            <video muted loop playsinline preload="metadata" width="800" height="1000">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284755/%C3%89_natural_fazf1k.mp4" type="video/mp4">
+            </video>
+            <div class="port-meta">
+              <span class="mono">Comercial</span>
+              <h4>Mimosa | É natural!</h4>
+              <p class="tagline">A segunda temporada do sabor</p>
+            </div>
+          </div>
+        </a>
+        <a href="projetos/puma.html" class="port-card reveal">
+          <div class="port-thumb t5">
+            <video muted loop playsinline preload="metadata" width="800" height="1000">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784154508/RESULT_MAIN_dwww36.mp4" type="video/mp4">
+            </video>
+            <div class="port-meta">
+              <span class="mono">Comercial</span>
+              <h4>Puma</h4>
+              <p class="tagline">Movimento que vende</p>
+            </div>
+          </div>
+        </a>
+        <a href="projetos/ergomotion.html" class="port-card reveal">
+          <div class="port-thumb t7">
+            <video muted loop playsinline preload="metadata" width="800" height="1000">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284798/Eliana_-_English_Subtitles_-_ERGOMOTION_1_u9vbao.mp4" type="video/mp4">
+            </video>
+            <div class="port-meta">
+              <span class="mono">Comercial</span>
+              <h4>Ergomotion</h4>
+              <p class="tagline">Conforto em movimento</p>
+            </div>
+          </div>
+        </a>
+        <a href="projetos/multiplo.html" class="port-card reveal">
+          <div class="port-thumb t9">
+            <video muted loop playsinline preload="metadata" width="800" height="1000">
+              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284794/GERAL_HORIZONTAL_1_dkj8de.mp4" type="video/mp4">
+            </video>
+            <div class="port-meta">
+              <span class="mono">Comercial</span>
+              <h4>Multiplo</h4>
+              <p class="tagline">Uma marca, várias histórias</p>
+            </div>
+          </div>
+        </a>
       </div>
     </div>
+    <script>
+    /* proporções padrão por card: distribui aleatoriamente 16:9, 1:1 e 4:3
+       pelos thumbnails a cada visita, evitando repetir a mesma proporção
+       em cards vizinhos, pra o mosaico nunca parecer sempre igual mas
+       manter sempre formatos equilibrados. Roda já aqui (não no <script>
+       do fim da página) pra aplicar antes do primeiro paint. */
+    (function shufflePortCards(){
+      var ratios = ['r-169','r-11','r-43'];
+      var thumbs = document.querySelectorAll('#portfolio .port-thumb');
+      var last = null;
+      thumbs.forEach(function(thumb){
+        var pool = ratios.filter(function(r){ return r !== last; });
+        var pick = pool[Math.floor(Math.random() * pool.length)];
+        thumb.classList.add(pick);
+        last = pick;
+      });
+    })();
+    </script>
   </section>
+
 
   <!-- SOLUÇÃO -->
   <section class="section section--smoke">
@@ -765,104 +884,6 @@ select{
   </section>
 
   <!-- PORTFÓLIO (placeholder — Anna: troca pelos teus vídeos reais) -->
-  <section class="section section--smoke" id="portfolio">
-    <div class="wrap">
-      <div class="port-head-row reveal">
-        <div class="section-head">
-          <span class="eyebrow mono">PORTFÓLIO</span>
-          <h2>Trabalho recente</h2>
-        </div>
-        <a href="#portfolio" class="port-viewall mono">VER TODOS →</a>
-      </div>
-      <div class="port-grid">
-        <a href="projetos/wise.html" class="port-card reveal s-a">
-          <div class="port-thumb t1">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://ashejla1hc2lmbll.public.blob.vercel-storage.com/WISE%20AD%20GERAL%20INGLES.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Wise</h4>
-              <p class="tagline">Confiança em cada transferência</p>
-            </div>
-          </div>
-        </a>
-        <a href="projetos/esthesis.html" class="port-card reveal s-b">
-          <div class="port-thumb t2">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/esthesis.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Esthesis</h4>
-              <p class="tagline">Cuidado que se vê na pele</p>
-            </div>
-          </div>
-        </a>
-        <a href="projetos/mimosa-01.html" class="port-card reveal s-c">
-          <div class="port-thumb t3">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://ashejla1hc2lmbll.public.blob.vercel-storage.com/Descomplica%20horizontal.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Mimosa | Mimosa Proteína</h4>
-              <p class="tagline">Sabor em close-up</p>
-            </div>
-          </div>
-        </a>
-        <a href="projetos/mimosa-02.html" class="port-card reveal s-d">
-          <div class="port-thumb t4">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://ashejla1hc2lmbll.public.blob.vercel-storage.com/%C3%89%20natural.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Mimosa | É natural!</h4>
-              <p class="tagline">A segunda temporada do sabor</p>
-            </div>
-          </div>
-        </a>
-        <a href="projetos/puma.html" class="port-card reveal s-e">
-          <div class="port-thumb t5">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784154508/RESULT_MAIN_dwww36.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Puma</h4>
-              <p class="tagline">Movimento que vende</p>
-            </div>
-          </div>
-        </a>
-        <a href="projetos/ergomotion.html" class="port-card reveal s-g">
-          <div class="port-thumb t7">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://ashejla1hc2lmbll.public.blob.vercel-storage.com/Eliana%20-%20English%20Subtitles%20-%20ERGOMOTION%20comp.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Ergomotion</h4>
-              <p class="tagline">Conforto em movimento</p>
-            </div>
-          </div>
-        </a>
-        <a href="projetos/multiplo.html" class="port-card reveal s-i">
-          <div class="port-thumb t9">
-            <video muted loop playsinline preload="metadata" width="800" height="1000">
-              <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/multiplo.mp4" type="video/mp4">
-            </video>
-            <div class="port-meta">
-              <span class="mono">Comercial</span>
-              <h4>Multiplo</h4>
-              <p class="tagline">Uma marca, várias histórias</p>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
   <!-- FAQ -->
   <section class="section section--smoke" id="faq">
     <div class="wrap">
@@ -1187,12 +1208,48 @@ function updateScrubber(){
 }
 window.addEventListener('scroll', updateScrubber, { passive:true });
 
+/* ---------- topbar transparente sobre o hero ---------- */
+(function toggleTopbarOnHero(){
+  const topbar = document.querySelector('.topbar');
+  const hero = document.getElementById('hero');
+  if(!topbar || !hero) return;
+  if(!('IntersectionObserver' in window)){
+    topbar.classList.add('is-scrolled');
+    return;
+  }
+  const io = new IntersectionObserver(([entry]) => {
+    topbar.classList.toggle('is-scrolled', !entry.isIntersecting);
+  }, { rootMargin: '-64px 0px 0px 0px', threshold: 0 });
+  io.observe(hero);
+})();
+
 /* ---------- foco do hero ao carregar ---------- */
 window.addEventListener('load', () => {
   requestAnimationFrame(() => {
     document.getElementById('heroContent').classList.add('is-focused');
   });
 });
+
+/* ---------- kicker oscilante do hero (We are / Bringing) ---------- */
+(function heroKicker(){
+  const track = document.getElementById('heroKicker');
+  if(!track) return;
+  const words = [...track.querySelectorAll('.hero-kicker-word')];
+  if(words.length < 2) return;
+  if(prefersReduced) return;
+  let current = words.findIndex(w => w.classList.contains('is-active'));
+  if(current < 0) current = 0;
+  setInterval(() => {
+    const next = (current + 1) % words.length;
+    words[current].classList.remove('is-active');
+    words[current].classList.add('is-exit');
+    words[next].classList.remove('is-exit');
+    void words[next].offsetWidth;
+    words[next].classList.add('is-active');
+    setTimeout(() => { words[current].classList.remove('is-exit'); }, 650);
+    current = next;
+  }, 2600);
+})();
 
 /* ---------- timecode decorativo no HUD ---------- */
 (function startTimecode(){
