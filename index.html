@@ -336,22 +336,22 @@ img{max-width:100%;display:block;}
   display:block;border-radius:18px;
   overflow:hidden;background:var(--ink);text-decoration:none;color:inherit;
   transition:transform .3s ease,box-shadow .3s ease;
+  grid-column:span 2;grid-row:span 2; /* fallback se o JS não correr */
 }
 .port-card:hover{
   transform:translateY(-4px);
   box-shadow:0 16px 32px rgba(21,16,13,.18);
 }
-/* tamanhos variados — cada card ocupa uma combinação diferente de colunas/linhas,
-   pra quebrar a grade e o mosaico não repetir o mesmo padrão a cada 3 itens */
-.port-card.s-a{grid-column:span 4;grid-row:span 3;}
-.port-card.s-b{grid-column:span 2;grid-row:span 3;}
-.port-card.s-c{grid-column:span 2;grid-row:span 2;}
-.port-card.s-d{grid-column:span 3;grid-row:span 2;}
-.port-card.s-e{grid-column:span 2;grid-row:span 2;}
-.port-card.s-f{grid-column:span 3;grid-row:span 3;}
-.port-card.s-g{grid-column:span 3;grid-row:span 2;}
-.port-card.s-h{grid-column:span 2;grid-row:span 2;}
-.port-card.s-i{grid-column:span 4;grid-row:span 2;}
+/* formatos independentes — 7 proporções distintas (nenhuma repetida),
+   atribuídas aleatoriamente aos cards via JS (ver script no fim da secção
+   PORTFÓLIO) pra o mosaico nunca ficar previsível/igual entre si */
+.port-card.s-a{grid-column:span 4;grid-row:span 3;}  /* grande, paisagem */
+.port-card.s-b{grid-column:span 2;grid-row:span 4;}  /* retrato alto */
+.port-card.s-c{grid-column:span 3;grid-row:span 2;}  /* paisagem média */
+.port-card.s-d{grid-column:span 2;grid-row:span 2;}  /* quadrado pequeno */
+.port-card.s-e{grid-column:span 4;grid-row:span 2;}  /* larga e baixa */
+.port-card.s-f{grid-column:span 2;grid-row:span 3;}  /* retrato médio */
+.port-card.s-g{grid-column:span 3;grid-row:span 3;}  /* quadrado grande */
 .port-thumb{
   position:relative;overflow:hidden;
   width:100%;height:100%;
@@ -590,9 +590,9 @@ select{
 @media (max-width:860px){
   .diag-grid,.sol-grid,.price-grid{grid-template-columns:1fr 1fr;}
   .port-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}
-  .port-card.s-a,.port-card.s-i{grid-column:span 2;grid-row:span 2;}
+  .port-card.s-a,.port-card.s-e,.port-card.s-g{grid-column:span 2;grid-row:span 2;}
   .port-card.s-b,.port-card.s-f{grid-column:span 1;grid-row:span 3;}
-  .port-card.s-c,.port-card.s-d,.port-card.s-e,.port-card.s-g,.port-card.s-h{grid-column:span 1;grid-row:span 2;}
+  .port-card.s-c,.port-card.s-d{grid-column:span 1;grid-row:span 2;}
   .proc-item{grid-template-columns:60px 1fr;}
   .proc-item .when{grid-column:2;text-align:left;}
   .form-grid{grid-template-columns:1fr;}
@@ -777,7 +777,7 @@ select{
         <a href="#portfolio" class="port-viewall mono">VER TODOS →</a>
       </div>
       <div class="port-grid">
-        <a href="projetos/wise.html" class="port-card reveal s-a">
+        <a href="projetos/wise.html" class="port-card reveal">
           <div class="port-thumb t1">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784125359/WISE_AD_GERAL_INGLES_ikeu44.mp4" type="video/mp4">
@@ -789,7 +789,7 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/esthesis.html" class="port-card reveal s-b">
+        <a href="projetos/esthesis.html" class="port-card reveal">
           <div class="port-thumb t2">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/f_auto,q_auto/willscope/portfolio/esthesis.mp4" type="video/mp4">
@@ -801,7 +801,7 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/mimosa-01.html" class="port-card reveal s-c">
+        <a href="projetos/mimosa-01.html" class="port-card reveal">
           <div class="port-thumb t3">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284836/Descomplica_horizontal_1_fgl4ij.mp4" type="video/mp4">
@@ -813,7 +813,7 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/mimosa-02.html" class="port-card reveal s-d">
+        <a href="projetos/mimosa-02.html" class="port-card reveal">
           <div class="port-thumb t4">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284755/%C3%89_natural_fazf1k.mp4" type="video/mp4">
@@ -825,7 +825,7 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/puma.html" class="port-card reveal s-e">
+        <a href="projetos/puma.html" class="port-card reveal">
           <div class="port-thumb t5">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784154508/RESULT_MAIN_dwww36.mp4" type="video/mp4">
@@ -837,7 +837,7 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/ergomotion.html" class="port-card reveal s-g">
+        <a href="projetos/ergomotion.html" class="port-card reveal">
           <div class="port-thumb t7">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284798/Eliana_-_English_Subtitles_-_ERGOMOTION_1_u9vbao.mp4" type="video/mp4">
@@ -849,7 +849,7 @@ select{
             </div>
           </div>
         </a>
-        <a href="projetos/multiplo.html" class="port-card reveal s-i">
+        <a href="projetos/multiplo.html" class="port-card reveal">
           <div class="port-thumb t9">
             <video muted loop playsinline preload="metadata" width="800" height="1000">
               <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1784284794/GERAL_HORIZONTAL_1_dkj8de.mp4" type="video/mp4">
@@ -863,6 +863,23 @@ select{
         </a>
       </div>
     </div>
+    <script>
+    /* formatos independentes por card: embaralha as 7 proporções (s-a..s-g)
+       e distribui aleatoriamente pelos cards a cada visita, pra o mosaico
+       nunca parecer sempre igual. Roda já aqui (não no <script> do fim da
+       página) pra aplicar antes do primeiro paint. */
+    (function shufflePortCards(){
+      var shapes = ['s-a','s-b','s-c','s-d','s-e','s-f','s-g'];
+      for(var i = shapes.length - 1; i > 0; i--){
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = shapes[i]; shapes[i] = shapes[j]; shapes[j] = tmp;
+      }
+      var cards = document.querySelectorAll('#portfolio .port-card');
+      cards.forEach(function(card, i){
+        card.classList.add(shapes[i % shapes.length]);
+      });
+    })();
+    </script>
   </section>
 
   <!-- FAQ -->
