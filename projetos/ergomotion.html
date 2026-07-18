@@ -453,13 +453,21 @@ body{background:#0a0a0a;color:#f3f0ec;}
     }
     video.addEventListener('loadeddata', drawBgFrame, { once:true });
     window.addEventListener('resize', drawBgFrame);
-    let bgInterval = null;
+    let bgRafId = null;
+    let bgLastDraw = 0;
+    function bgLoop(ts){
+      if(!bgLastDraw || ts - bgLastDraw >= 40){
+        drawBgFrame();
+        bgLastDraw = ts;
+      }
+      bgRafId = requestAnimationFrame(bgLoop);
+    }
     video.addEventListener('play', () => {
-      if(bgInterval) return;
-      bgInterval = setInterval(drawBgFrame, 350);
+      if(bgRafId) return;
+      bgRafId = requestAnimationFrame(bgLoop);
     });
     video.addEventListener('pause', () => {
-      if(bgInterval){ clearInterval(bgInterval); bgInterval = null; }
+      if(bgRafId){ cancelAnimationFrame(bgRafId); bgRafId = null; }
     });
     video.addEventListener('seeked', drawBgFrame);
   }
