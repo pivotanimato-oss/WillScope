@@ -368,9 +368,18 @@ img{max-width:100%;display:block;}
 /* ---------- processo ---------- */
 .proc-list{border-top:1px solid var(--line);}
 .proc-row{
+  position:sticky;top:64px;
   display:grid;grid-template-columns:240px 320px 1fr;gap:40px;
-  padding:40px 0;border-bottom:1px solid var(--line);align-items:center;
+  padding:40px 0;border-top:1px solid var(--line);align-items:center;
+  min-height:60vh;
+  background:var(--white);
+  box-shadow:0 -24px 40px -24px rgba(0,0,0,.08);
 }
+.proc-row:nth-child(1){z-index:1;}
+.proc-row:nth-child(2){z-index:2;}
+.proc-row:nth-child(3){z-index:3;}
+.proc-row:nth-child(4){z-index:4;}
+.proc-row:nth-child(5){z-index:5;}
 .proc-media{
   width:100%;aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;
   background:var(--smoke) center/cover no-repeat;
