@@ -368,16 +368,12 @@ img{max-width:100%;display:block;}
 /* ---------- processo ---------- */
 .proc-list{border-top:1px solid var(--line);}
 .proc-item{
-  display:grid;grid-template-columns:100px 1fr 160px;gap:24px;
-  padding:28px 0;border-bottom:1px solid var(--line);align-items:center;
+  display:grid;grid-template-columns:90px 1fr;gap:28px;
+  padding:32px 0;border-bottom:1px solid var(--line);align-items:center;
 }
-.proc-item .mono{color:var(--red);font-size:13px;}
-.proc-item h3{font-size:19px;text-transform:none;margin-bottom:6px;}
-.proc-item p{color:var(--ink-soft);font-size:14px;margin:0;}
-.proc-item .when{
-  text-align:right;font-size:12px;color:var(--ink-soft);
-  font-family:'IBM Plex Mono',monospace;
-}
+.proc-item .mono{color:var(--red);font-size:42px;font-weight:600;line-height:1;font-family:'IBM Plex Mono',monospace;}
+.proc-item h3{font-size:24px;text-transform:none;margin-bottom:8px;}
+.proc-item p{color:var(--ink-soft);font-size:16px;margin:0;line-height:1.55;}
 
 /* ---------- portfolio ---------- */
 .port-head-row{
@@ -660,8 +656,7 @@ label .req{color:var(--orange);}
 @media (max-width:860px){
   .diag-grid,.sol-grid,.price-grid{grid-template-columns:1fr 1fr;}
   .port-grid{columns:2;}
-  .proc-item{grid-template-columns:60px 1fr;}
-  .proc-item .when{grid-column:2;text-align:left;}
+  .proc-item{grid-template-columns:56px 1fr;}
   .form-grid{grid-template-columns:1fr;}
   .hero-scope{display:none;}
   .footer-col{padding-left:20px;}
@@ -848,29 +843,24 @@ label .req{color:var(--orange);}
       </div>
       <div class="proc-list">
         <div class="proc-item reveal">
-          <span class="mono">01 / 05</span>
+          <span class="mono">01</span>
           <div><h3>Pesquisa & Diagnóstico</h3><p>Toda ideia criativa parte de uma base sólida de informação. Antes de definir qualquer conceito, estudamos a marca, o mercado em que ela compete e o público que precisa de alcançar, para que a narrativa tenha fundamento real e não só estética.</p></div>
-          <span class="when">DIA 1</span>
         </div>
         <div class="proc-item reveal">
-          <span class="mono">02 / 05</span>
+          <span class="mono">02</span>
           <div><h3>Conceito & Direção Criativa</h3><p>É aqui que as ideias ganham forma. Desenvolvemos conceitos criativos originais, pensados para representar a identidade da marca, e apresentamos essa direção para validação antes de avançar. O objetivo é que o vídeo final se destaque de qualquer coisa que já foi feito antes.</p></div>
-          <span class="when">ATÉ 3 DIAS</span>
         </div>
         <div class="proc-item reveal">
-          <span class="mono">03 / 05</span>
+          <span class="mono">03</span>
           <div><h3>Pré-produção</h3><p>Com o conceito definido, entramos nos detalhes. Guião, moodboard, lista de planos e agenda de filmagem são organizados com cuidado, garantindo que cada etapa da produção esteja preparada antes das câmaras ligarem.</p></div>
-          <span class="when">3–5 DIAS</span>
         </div>
         <div class="proc-item reveal">
-          <span class="mono">04 / 05</span>
+          <span class="mono">04</span>
           <div><h3>Filmagem</h3><p>É o momento em que a ideia se torna imagem real. Cuidamos de cada plano com precisão, com equipa e equipamento alinhados ao que foi planeado, para que a história seja contada exatamente como foi pensada.</p></div>
-          <span class="when">A CALENDARIZAR</span>
         </div>
         <div class="proc-item reveal">
-          <span class="mono">05 / 05</span>
+          <span class="mono">05</span>
           <div><h3>Pós-produção & Entrega</h3><p>O trabalho ainda não termina na filmagem. Edição, correção de cor, desenho de som e acabamento visual transformam o material bruto num vídeo pronto para representar a marca com qualidade, do primeiro ao último segundo.</p></div>
-          <span class="when">7–10 DIAS ÚTEIS</span>
         </div>
       </div>
     </div>
