@@ -1014,6 +1014,7 @@ label .req{color:var(--orange);}
       </div>
 
       <form class="reveal" id="briefingForm" novalidate>
+        <input type="text" name="website" id="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true">
         <div class="form-grid">
           <div class="field">
             <label for="nome">Nome completo <span class="req">*</span></label>
@@ -1388,8 +1389,22 @@ toggleDataEvento();
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  // honeypot: campo invisível que só bots preenchem. Se vier preenchido, finge que deu certo e não envia nada.
+  if(form.website.value){
+    formMsg.textContent = 'Obrigado! Entramos em contacto em até 24h úteis.';
+    formMsg.classList.add('show');
+    form.reset();
+    return;
+  }
+
+  // trava contra duplo envio (clique duplo, ou reenvio automático de script)
+  const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+  if(submitBtn && submitBtn.disabled) return;
+  if(submitBtn) submitBtn.disabled = true;
+
   if(!form.checkValidity()){
     form.reportValidity();
+    if(submitBtn) submitBtn.disabled = false;
     return;
   }
 
@@ -1398,14 +1413,8 @@ form.addEventListener('submit', async (e) => {
   const prazoCombinado = suggestPrazoCombinado(data.dataEvento);
   const lead = { ...data, ...q, prazoCombinado, timestamp: new Date().toISOString() };
 
-  // guarda uma cópia local de segurança (não perde o lead mesmo sem endpoint)
-  try{
-    const existing = JSON.parse(localStorage.getItem('willscope_leads') || '[]');
-    existing.push(lead);
-    localStorage.setItem('willscope_leads', JSON.stringify(existing));
-  }catch(err){ console.warn('Não foi possível guardar localmente:', err); }
-
   // envia para o backend (Google Apps Script / Sheets, Zapier, etc.)
+  let enviouComSucesso = false;
   if(CONFIG.LEAD_ENDPOINT){
     try{
       await fetch(CONFIG.LEAD_ENDPOINT, {
@@ -1414,13 +1423,24 @@ form.addEventListener('submit', async (e) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(lead),
       });
+      enviouComSucesso = true;
     }catch(err){ console.warn('Falha ao enviar lead para o endpoint:', err); }
+  }
+
+  // só guarda cópia local se o envio falhou de verdade (fallback), nunca como duplicata permanente
+  if(!enviouComSucesso){
+    try{
+      const existing = JSON.parse(localStorage.getItem('willscope_leads') || '[]');
+      existing.push(lead);
+      localStorage.setItem('willscope_leads', JSON.stringify(existing));
+    }catch(err){ console.warn('Não foi possível guardar localmente:', err); }
   }
 
   formMsg.textContent = getConfirmationMessage(q);
   formMsg.classList.add('show');
   form.reset();
   toggleDataEvento();
+  if(submitBtn) submitBtn.disabled = false;
 });
 
 /* ---------- FAQ estilo IA (pensando + digitação com fade) ---------- */
