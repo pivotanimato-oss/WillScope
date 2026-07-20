@@ -1361,7 +1361,9 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
   const tryPlay = () => v.play().catch(() => {});
   tryPlay();
   document.addEventListener('visibilitychange', () => { if(!document.hidden) tryPlay(); });
-  ['touchstart','click'].forEach(evt => document.addEventListener(evt, tryPlay, { once:true, passive:true }));
+  ['touchstart','click','scroll'].forEach(evt => document.addEventListener(evt, tryPlay, { once:true, passive:true }));
+  window.addEventListener('load', tryPlay);
+  window.addEventListener('pageshow', tryPlay);
 })();
 
 /* ---------- trust marquee: reconstrói garantindo que nunca fique curto ---------- */
@@ -1402,36 +1404,6 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
   window.addEventListener('resize', () => {
     clearTimeout(resizeT);
     resizeT = setTimeout(build, 200);
-  });
-})();
-
-/* ---------- força o autoplay do vídeo do hero (in-app browsers tipo Instagram/FB costumam bloquear) ---------- */
-(function(){
-  const heroVideo = document.getElementById('heroVideo');
-  if(!heroVideo || prefersReduced) return;
-
-  function tryPlay(){
-    heroVideo.muted = true;
-    const p = heroVideo.play();
-    if(p && p.catch) p.catch(() => {});
-  }
-
-  tryPlay();
-  document.addEventListener('DOMContentLoaded', tryPlay);
-  window.addEventListener('load', tryPlay);
-  window.addEventListener('pageshow', tryPlay);
-
-  // fallback: se ainda estiver pausado, retenta assim que o usuário interagir
-  // (necessário em alguns in-app browsers que exigem gesto do usuário)
-  const resumeOnGesture = () => {
-    if(heroVideo.paused) tryPlay();
-  };
-  ['touchstart','scroll','click'].forEach(evt => {
-    document.addEventListener(evt, resumeOnGesture, { passive:true, once:true });
-  });
-
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible') tryPlay();
   });
 })();
 
