@@ -726,7 +726,8 @@ label .req{color:var(--orange);}
   <section class="hero" id="hero">
     <div class="hero-video-wrap">
       <!-- Troca o src pelo teu vídeo (mp4, sem som, ideal 10-20s em loop, leve) -->
-      <video autoplay muted loop playsinline poster="">
+      <video autoplay muted loop playsinline preload="auto" poster="" id="heroVideo">
+        <source media="(max-width: 767px)" src="https://res.cloudinary.com/g0tgkcpt/video/upload/so_7,f_auto,q_auto,w_900/v1784322394/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
         <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/so_7/v1784322394/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
       </video>
     </div>
@@ -739,7 +740,6 @@ label .req{color:var(--orange);}
           </div>
         </div>
         <h1>The <em>right eyes</em>,<br>to your brand.</h1>
-        <p class="sub">Do guião à entrega, sem intermediários. Vídeo comercial para marcas em Lisboa.</p>
         <div class="hero-ctas">
           <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
           <a href="#portfolio" class="btn btn--ghost">Ver Portfólio</a>
@@ -1352,6 +1352,18 @@ const CONFIG = {
 };
 
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- hero video: garante autoplay em mobile ---------- */
+(function forceHeroPlay(){
+  const v = document.getElementById('heroVideo');
+  if(!v || prefersReduced) return;
+  v.muted = true;
+  v.setAttribute('muted','');
+  const tryPlay = () => v.play().catch(() => {});
+  tryPlay();
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) tryPlay(); });
+  ['touchstart','click'].forEach(evt => document.addEventListener(evt, tryPlay, { once:true, passive:true }));
+})();
 
 /* ---------- trust marquee: reconstrói garantindo que nunca fique curto ---------- */
 (function initTrustMarquee(){
