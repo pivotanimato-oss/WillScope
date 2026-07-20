@@ -726,7 +726,7 @@ label .req{color:var(--orange);}
   <section class="hero" id="hero">
     <div class="hero-video-wrap">
       <!-- Troca o src pelo teu vídeo (mp4, sem som, ideal 10-20s em loop, leve) -->
-      <video autoplay muted loop playsinline preload="auto" poster="" id="heroVideo">
+      <video autoplay muted loop playsinline webkit-playsinline preload="auto" poster="" id="heroVideo">
         <source media="(max-width: 767px)" src="https://res.cloudinary.com/g0tgkcpt/video/upload/so_7,f_auto,q_auto,w_900/v1784322394/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
         <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/so_7/v1784322394/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
       </video>
@@ -1402,6 +1402,36 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
   window.addEventListener('resize', () => {
     clearTimeout(resizeT);
     resizeT = setTimeout(build, 200);
+  });
+})();
+
+/* ---------- força o autoplay do vídeo do hero (in-app browsers tipo Instagram/FB costumam bloquear) ---------- */
+(function(){
+  const heroVideo = document.getElementById('heroVideo');
+  if(!heroVideo || prefersReduced) return;
+
+  function tryPlay(){
+    heroVideo.muted = true;
+    const p = heroVideo.play();
+    if(p && p.catch) p.catch(() => {});
+  }
+
+  tryPlay();
+  document.addEventListener('DOMContentLoaded', tryPlay);
+  window.addEventListener('load', tryPlay);
+  window.addEventListener('pageshow', tryPlay);
+
+  // fallback: se ainda estiver pausado, retenta assim que o usuário interagir
+  // (necessário em alguns in-app browsers que exigem gesto do usuário)
+  const resumeOnGesture = () => {
+    if(heroVideo.paused) tryPlay();
+  };
+  ['touchstart','scroll','click'].forEach(evt => {
+    document.addEventListener(evt, resumeOnGesture, { passive:true, once:true });
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible') tryPlay();
   });
 })();
 
