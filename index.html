@@ -1114,18 +1114,6 @@ label .req{color:var(--orange);}
             <input type="text" id="empresa" name="empresa">
           </div>
           <div class="field">
-            <label for="setor">Setor <span class="req">*</span></label>
-            <select id="setor" name="setor" required>
-              <option value="">Seleciona uma opção</option>
-              <option value="hotelaria">Hotelaria</option>
-              <option value="restauracao">Restauração</option>
-              <option value="imobiliario">Imobiliário</option>
-              <option value="eventos">Eventos</option>
-              <option value="retalho">Retalho</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-          <div class="field">
             <label for="tipoProjeto">Tipo de projeto <span class="req">*</span></label>
             <select id="tipoProjeto" name="tipoProjeto" required>
               <option value="">Seleciona uma opção</option>
@@ -1141,12 +1129,11 @@ label .req{color:var(--orange);}
             <div class="budget-field">
               <select id="orcamento" name="orcamento" required>
                 <option value="">Seleciona uma faixa</option>
-                <option value="ate-500">Até 500€</option>
+                <option value="nao-defini">Ainda não defini</option>
                 <option value="500-1500">500€ – 1.500€</option>
                 <option value="1500-3500">1.500€ – 3.500€</option>
                 <option value="3500-7000">3.500€ – 7.000€</option>
                 <option value="mais-7000">Mais de 7.000€</option>
-                <option value="nao-defini">Ainda não defini</option>
               </select>
             </div>
           </div>
@@ -1219,9 +1206,6 @@ const CONFIG = {
   MIN_QUALIFY: 500,
   // A partir deste valor (em €), prioridade automática "Alta"
   PRIORITY_THRESHOLD: 1500,
-  // Setores do teu ICP (ideal customer profile) — sobem a prioridade
-  // de "Média" para "Alta" mesmo com orçamento mais baixo
-  PRIORITY_SECTORS: ['hotelaria', 'imobiliario', 'eventos'],
 
   // PRAZO DE ENTREGA -------------------------------------------
   // Só usado quando "Tipo de projeto" = Cobertura de evento e a Data do
@@ -1404,9 +1388,8 @@ if('IntersectionObserver' in window){
 /* ============================================================
    SISTEMA DE QUALIFICAÇÃO DE LEADS
    ============================================================ */
-function qualifyLead(setor, orcamentoValue){
+function qualifyLead(orcamentoValue){
   const floors = {
-    'ate-500': 0,
     '500-1500': 500,
     '1500-3500': 1500,
     '3500-7000': 3500,
@@ -1430,9 +1413,6 @@ function qualifyLead(setor, orcamentoValue){
   } else {
     status = 'Qualificado';
     prioridade = 'Média';
-    if(CONFIG.PRIORITY_SECTORS.includes(setor)){
-      prioridade = 'Alta'; // bump por setor prioritário
-    }
   }
 
   return { status, prioridade, orcamentoFloor: floor };
@@ -1503,7 +1483,7 @@ form.addEventListener('submit', async (e) => {
   }
 
   const data = Object.fromEntries(new FormData(form).entries());
-  const q = qualifyLead(data.setor, data.orcamento);
+  const q = qualifyLead(data.orcamento);
   const prazoCombinado = suggestPrazoCombinado(data.dataEvento);
   const lead = { ...data, ...q, prazoCombinado, timestamp: new Date().toISOString() };
 
