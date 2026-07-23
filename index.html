@@ -726,7 +726,7 @@ label .req{color:var(--orange);}
   <section class="hero" id="hero">
     <div class="hero-video-wrap">
       <!-- Troca o src pelo teu vídeo (mp4, sem som, ideal 10-20s em loop, leve) -->
-      <video autoplay muted loop playsinline preload="auto" poster="" id="heroVideo">
+      <video autoplay muted loop playsinline webkit-playsinline preload="auto" poster="" id="heroVideo">
         <source media="(max-width: 767px)" src="https://res.cloudinary.com/g0tgkcpt/video/upload/so_7,f_auto,q_auto,w_900/v1784322394/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
         <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/so_7/v1784322394/SHOWREEL_2025_-_WILLSCOPE_PRODUCTION_HOUSE_ufq0hj.mp4" type="video/mp4">
       </video>
@@ -1361,7 +1361,9 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
   const tryPlay = () => v.play().catch(() => {});
   tryPlay();
   document.addEventListener('visibilitychange', () => { if(!document.hidden) tryPlay(); });
-  ['touchstart','click'].forEach(evt => document.addEventListener(evt, tryPlay, { once:true, passive:true }));
+  ['touchstart','click','scroll'].forEach(evt => document.addEventListener(evt, tryPlay, { once:true, passive:true }));
+  window.addEventListener('load', tryPlay);
+  window.addEventListener('pageshow', tryPlay);
 })();
 
 /* ---------- trust marquee: reconstrói garantindo que nunca fique curto ---------- */
