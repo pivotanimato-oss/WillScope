@@ -892,12 +892,83 @@ label .req{color:var(--orange);}
     </div>
   </section>
 
+
+  <section class="section form-section" id="formulario">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow mono">VAMOS FALAR</span>
+        <h2>Pede o teu orçamento</h2>
+        <p class="form-schedule">Preenche o formulário, ou agenda uma chamada <a href="https://cal.com/willscope/" target="_blank" rel="noopener">AQUI</a>.</p>
+      </div>
+
+      <form class="reveal" id="briefingForm" novalidate>
+        <input type="text" name="website" id="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true">
+        <div class="form-grid">
+          <div class="field">
+            <label for="nome">Nome completo <span class="req">*</span></label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="field">
+            <label for="telefone">Telefone <span class="req">*</span></label>
+            <input type="tel" id="telefone" name="telefone" required>
+          </div>
+          <div class="field">
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" name="empresa">
+          </div>
+          <div class="field">
+            <label for="tipoProjeto">Tipo de projeto <span class="req">*</span></label>
+            <select id="tipoProjeto" name="tipoProjeto" required>
+              <option value="">Seleciona uma opção</option>
+              <option value="institucional">Vídeo institucional</option>
+              <option value="spot">Spot publicitário</option>
+              <option value="evento">Cobertura de evento</option>
+              <option value="social">Conteúdo para redes sociais</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="orcamento">Orçamento disponível <span class="req">*</span></label>
+            <div class="budget-field">
+              <select id="orcamento" name="orcamento" required>
+                <option value="">Seleciona uma faixa</option>
+                <option value="nao-defini">Ainda não defini</option>
+                <option value="500-1500">500€ – 1.500€</option>
+                <option value="1500-3500">1.500€ – 3.500€</option>
+                <option value="3500-7000">3.500€ – 7.000€</option>
+                <option value="mais-7000">Mais de 7.000€</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" id="dataEventoField" style="display:none">
+            <label for="dataEvento">Data do evento <span class="req">*</span></label>
+            <input type="date" id="dataEvento" name="dataEvento">
+          </div>
+          <div class="field field--full">
+            <label for="mensagem">Conta-nos sobre o projeto</label>
+            <textarea id="mensagem" name="mensagem" placeholder="Objetivo, referências, local, o que for relevante..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-submit">
+          <button type="submit" class="btn btn--primary">Quero o Meu Orçamento</button>
+          <span class="budget-note">Sem compromisso. É o primeiro passo.</span>
+        </div>
+
+        <div class="form-msg" id="formMsg"></div>
+      </form>
+    </div>
+  </section>
   <!-- FAQ -->
   <section class="section section--smoke" id="faq">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow mono">DÚVIDAS FREQUENTES</span>
-        <h2>Perguntas & Respostas</h2>
+        <h2>Perguntas Frequentes</h2>
         <p>Clica numa pergunta para veres a resposta.</p>
       </div>
 
@@ -1073,77 +1144,6 @@ label .req{color:var(--orange);}
   </section>
 
 
-  <section class="section form-section" id="formulario">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow mono">VAMOS FALAR</span>
-        <h2>Pede o teu orçamento</h2>
-        <p class="form-schedule">Preenche o formulário, ou agenda uma chamada <a href="https://cal.com/willscope/" target="_blank" rel="noopener">AQUI</a>.</p>
-      </div>
-
-      <form class="reveal" id="briefingForm" novalidate>
-        <input type="text" name="website" id="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true">
-        <div class="form-grid">
-          <div class="field">
-            <label for="nome">Nome completo <span class="req">*</span></label>
-            <input type="text" id="nome" name="nome" required>
-          </div>
-          <div class="field">
-            <label for="email">Email <span class="req">*</span></label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="field">
-            <label for="telefone">Telefone <span class="req">*</span></label>
-            <input type="tel" id="telefone" name="telefone" required>
-          </div>
-          <div class="field">
-            <label for="empresa">Empresa</label>
-            <input type="text" id="empresa" name="empresa">
-          </div>
-          <div class="field">
-            <label for="tipoProjeto">Tipo de projeto <span class="req">*</span></label>
-            <select id="tipoProjeto" name="tipoProjeto" required>
-              <option value="">Seleciona uma opção</option>
-              <option value="institucional">Vídeo institucional</option>
-              <option value="spot">Spot publicitário</option>
-              <option value="evento">Cobertura de evento</option>
-              <option value="social">Conteúdo para redes sociais</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="orcamento">Orçamento disponível <span class="req">*</span></label>
-            <div class="budget-field">
-              <select id="orcamento" name="orcamento" required>
-                <option value="">Seleciona uma faixa</option>
-                <option value="nao-defini">Ainda não defini</option>
-                <option value="500-1500">500€ – 1.500€</option>
-                <option value="1500-3500">1.500€ – 3.500€</option>
-                <option value="3500-7000">3.500€ – 7.000€</option>
-                <option value="mais-7000">Mais de 7.000€</option>
-              </select>
-            </div>
-          </div>
-          <div class="field" id="dataEventoField" style="display:none">
-            <label for="dataEvento">Data do evento <span class="req">*</span></label>
-            <input type="date" id="dataEvento" name="dataEvento">
-          </div>
-          <div class="field field--full">
-            <label for="mensagem">Conta-nos sobre o projeto</label>
-            <textarea id="mensagem" name="mensagem" placeholder="Objetivo, referências, local, o que for relevante..."></textarea>
-          </div>
-        </div>
-
-        <div class="form-submit">
-          <button type="submit" class="btn btn--primary">Quero o Meu Orçamento</button>
-          <span class="budget-note">Sem compromisso. É o primeiro passo.</span>
-        </div>
-
-        <div class="form-msg" id="formMsg"></div>
-      </form>
-    </div>
-  </section>
-
 </main>
 
 <footer class="footer">
@@ -1157,8 +1157,8 @@ label .req{color:var(--orange);}
       <div class="footer-col">
         <a href="#hero">Home</a>
         <a href="#portfolio">Portfólio</a>
-        <a href="#faq">FAQ</a>
         <a href="#formulario">Contacto</a>
+        <a href="#faq">FAQ</a>
       </div>
       <div class="footer-col footer-col--social">
         <a href="https://instagram.com/willscope" target="_blank" rel="noopener">Instagram</a>
