@@ -53,6 +53,7 @@
 
 *,*::before,*::after{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
+html.js-floaty-scroll{scroll-behavior:auto;}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto;}}
 
 body{
@@ -1577,6 +1578,68 @@ form.addEventListener('submit', async (e) => {
       }
     });
   });
+})();
+
+/* ---------- floaty scroll (inércia suave, tipo Lenis, sem lib externa) ---------- */
+(function(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  // Em touch/mobile e com reduced-motion mantemos o scroll nativo (já tem inércia própria).
+  if(reduceMotion || isCoarsePointer) return;
+
+  document.documentElement.classList.add('js-floaty-scroll');
+
+  const EASE = 0.085; // menor = mais "flutuante"/lento a assentar
+  let current = window.scrollY;
+  let target = current;
+  let raf = null;
+
+  function maxScroll(){
+    return document.documentElement.scrollHeight - window.innerHeight;
+  }
+  function clamp(v){
+    return Math.max(0, Math.min(v, maxScroll()));
+  }
+
+  function tick(){
+    current += (target - current) * EASE;
+    if(Math.abs(target - current) < 0.4){
+      current = target;
+      window.scrollTo(0, current);
+      raf = null;
+      return;
+    }
+    window.scrollTo(0, current);
+    raf = requestAnimationFrame(tick);
+  }
+
+  function onWheel(e){
+    e.preventDefault();
+    target = clamp(target + e.deltaY);
+    if(!raf) raf = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('wheel', onWheel, { passive:false });
+
+  // Mantém tudo sincronizado se o utilizador usar teclado, barra de scroll, etc.
+  window.addEventListener('scroll', () => {
+    if(!raf){ current = window.scrollY; target = current; }
+  }, { passive:true });
+
+  // Links âncora (#faq, #formulario, back-to-top, etc.) passam a usar o mesmo motor.
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if(!el) return;
+      e.preventDefault();
+      target = clamp(el.getBoundingClientRect().top + window.scrollY);
+      if(!raf) raf = requestAnimationFrame(tick);
+      history.pushState(null, '', '#' + id);
+    });
+  });
+
+  window.addEventListener('resize', () => { target = clamp(target); });
 })();
 </script>
 
