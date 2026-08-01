@@ -409,8 +409,8 @@ img{max-width:100%;display:block;}
 .sol-card p{color:var(--ink-soft);font-size:15px;}
 
 /* ---------- processo ---------- */
-#procTitle{opacity:0;} /* evita flash antes do GSAP montar o split; o próprio script trata do fallback */
-#procTitle .line{will-change:transform;}
+.gsap-lines{opacity:0;} /* evita flash antes do GSAP montar o split; o próprio script trata do fallback */
+.gsap-lines .line{will-change:transform;}
 .proc-list{border-top:1px solid var(--line);max-width:1180px;margin:0 auto;}
 .proc-head{
   padding-top:32px;padding-bottom:24px;margin-bottom:0;
@@ -533,42 +533,84 @@ img{max-width:100%;display:block;}
 .price-card p{font-size:13px;color:var(--ink-soft);margin:0;}
 
 /* ---------- FAQ tipo IA ---------- */
-.faq-group-h{
-  font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
-  color:var(--red);margin:40px 0 12px;background:var(--white);
+
+/* filtros por categoria */
+.faq-filters{
+  display:flex;flex-wrap:wrap;gap:10px;
+  margin-bottom:36px;
 }
+.faq-filter{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  padding:11px 20px;border-radius:999px;
+  border:1.5px solid var(--line);background:var(--white);color:var(--ink-soft);
+  cursor:pointer;white-space:nowrap;
+  transition:border-color .2s ease, color .2s ease, background .2s ease, transform .15s ease;
+}
+.faq-filter:hover{border-color:var(--ink);color:var(--ink);}
+.faq-filter.is-active{
+  border-color:transparent;color:var(--white);
+  background:linear-gradient(90deg,var(--red),var(--orange));
+}
+.faq-filter:active{transform:scale(.96);}
+
+.faq-group-h{
+  display:flex;align-items:center;gap:12px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--ink-soft);margin:44px 0 16px;
+}
+.faq-group-h::before{content:'';width:22px;height:2px;flex-shrink:0;background:linear-gradient(90deg,var(--red),var(--orange));}
 .faq-list .faq-group-h:first-child{margin-top:0;}
-.faq-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);}
-.faq-item{background:var(--white);}
+
+.faq-list{display:flex;flex-direction:column;gap:12px;}
+.faq-item{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-left:3px solid transparent;
+  border-radius:var(--radius);
+  transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.faq-item:hover{border-color:var(--ink-soft);}
+.faq-item.is-open{
+  border-color:var(--line);
+  border-left-color:var(--red);
+  box-shadow:0 20px 40px -24px rgba(21,16,13,.22);
+}
 .faq-q{
-  width:100%;display:flex;align-items:center;gap:16px;
-  padding:22px 24px;background:none;border:none;cursor:pointer;
+  width:100%;display:flex;align-items:center;gap:18px;
+  padding:24px 26px;background:none;border:none;cursor:pointer;
   text-align:left;font-family:'Work Sans',sans-serif;
 }
 .faq-q .faq-icon{
-  flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  flex-shrink:0;width:30px;height:30px;border-radius:50%;
   background:var(--ink);color:var(--white);
   display:flex;align-items:center;justify-content:center;
   font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
-  transition:background .2s ease;
+  transition:background .2s ease, transform .2s ease;
 }
-.faq-item.is-open .faq-q .faq-icon{background:var(--red);}
+.faq-item.is-open .faq-q .faq-icon{background:linear-gradient(120deg,var(--red),var(--orange));}
 .faq-q span.q-text{
-  flex:1;font-size:16px;font-weight:600;color:var(--ink);
+  flex:1;font-size:17px;font-weight:600;color:var(--ink);line-height:1.4;
 }
 .faq-q .faq-caret{
   flex-shrink:0;width:18px;height:18px;color:var(--ink-soft);
-  transition:transform .25s ease;
+  transition:transform .3s ease, color .2s ease;
 }
-.faq-item.is-open .faq-q .faq-caret{transform:rotate(180deg);}
+.faq-item.is-open .faq-q .faq-caret{transform:rotate(180deg);color:var(--red);}
 .faq-a{
   max-height:0;overflow:hidden;
   transition:max-height .35s ease;
 }
 .faq-item.is-open .faq-a{max-height:500px;}
 .faq-a-inner{
-  padding:0 24px 24px 68px;
-  display:flex;gap:10px;color:var(--ink-soft);font-size:14.5px;line-height:1.65;
+  padding:0 26px 26px 74px;
+  display:flex;gap:10px;color:var(--ink-soft);font-size:15px;line-height:1.7;
+}
+@media (max-width:640px){
+  .faq-q{padding:20px;gap:14px;}
+  .faq-q span.q-text{font-size:15.5px;}
+  .faq-a-inner{padding:0 20px 22px 20px;}
 }
 
 /* bolinha estilo "avatar da IA" com gradiente animado enquanto pensa/escreve */
@@ -909,7 +951,7 @@ label .req{color:var(--orange);}
   <section class="section" id="processo">
     <div class="wrap">
       <div class="section-head proc-head">
-        <h2 id="procTitle">Como produzimos a sua produção audiovisual</h2>
+        <h2 class="gsap-lines">Como produzimos a sua produção audiovisual</h2>
       </div>
       <div class="proc-list">
         <!-- troca as imagens de fundo abaixo (assets/proc/01.jpg até 04.jpg) pelas fotos reais de cada etapa -->
@@ -1011,13 +1053,22 @@ label .req{color:var(--orange);}
   <section class="section section--smoke" id="faq">
     <div class="wrap">
       <div class="section-head reveal">
-        <h2>Perguntas Frequentes</h2>
+        <span class="eyebrow mono">DÚVIDAS</span>
+        <h2 class="gsap-lines">Perguntas Frequentes</h2>
+      </div>
+
+      <div class="faq-filters reveal" id="faqFilters">
+        <button class="faq-filter is-active" type="button" data-filter="todos">Todos</button>
+        <button class="faq-filter" type="button" data-filter="geral">Geral</button>
+        <button class="faq-filter" type="button" data-filter="agencias">Para agências</button>
+        <button class="faq-filter" type="button" data-filter="equipa">Equipa interna</button>
+        <button class="faq-filter" type="button" data-filter="lancamento">Marcas em lançamento</button>
       </div>
 
       <div class="faq-list reveal" id="faqList">
 
         <h3 class="faq-group-h">Geral</h3>
-        <div class="faq-item" data-answer="Depende do tipo de projeto. Um conteúdo para redes sociais fica pronto em 3 a 5 dias úteis após a filmagem. Vídeos institucionais levam 1 a 2 semanas, e campanhas maiores com várias fases podem chegar a 3 semanas. O prazo fica fechado no orçamento, antes de começarmos.">
+        <div class="faq-item" data-group="geral" data-answer="Depende do tipo de projeto. Um conteúdo para redes sociais fica pronto em 3 a 5 dias úteis após a filmagem. Vídeos institucionais levam 1 a 2 semanas, e campanhas maiores com várias fases podem chegar a 3 semanas. O prazo fica fechado no orçamento, antes de começarmos.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Quanto tempo demora do briefing até à entrega final?</span>
@@ -1033,7 +1084,7 @@ label .req{color:var(--orange);}
             </div>
           </div>
         </div>
-        <div class="faq-item" data-answer="O diferencial está na direção, na estratégia e na organização do processo, do guião à entrega final, sem intermediários. Tratamos cada projeto como uma história para contar, pensada e planeada antes de qualquer câmara ligar. O foco está na narrativa e no impacto real para o negócio do cliente.">
+        <div class="faq-item" data-group="geral" data-answer="O diferencial está na direção, na estratégia e na organização do processo, do guião à entrega final, sem intermediários. Tratamos cada projeto como uma história para contar, pensada e planeada antes de qualquer câmara ligar. O foco está na narrativa e no impacto real para o negócio do cliente.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Qual é o diferencial da WillScope?</span>
@@ -1049,7 +1100,7 @@ label .req{color:var(--orange);}
             </div>
           </div>
         </div>
-        <div class="faq-item" data-answer="Depois da filmagem entramos na pós-produção: montagem, color grading e mistura de áudio. Enviamos uma primeira versão para aprovação. O orçamento inclui uma ronda de alterações para ajustar detalhes antes da entrega final.">
+        <div class="faq-item" data-group="geral" data-answer="Depois da filmagem entramos na pós-produção: montagem, color grading e mistura de áudio. Enviamos uma primeira versão para aprovação. O orçamento inclui uma ronda de alterações para ajustar detalhes antes da entrega final.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Como funciona a fase de pós-produção e revisões?</span>
@@ -1066,7 +1117,7 @@ label .req{color:var(--orange);}
           </div>
         </div>
         <h3 class="faq-group-h">Para agências</h3>
-        <div class="faq-item" data-answer="Um freelancer entrega um vídeo. A WillScope entrega uma peça com direção visual e narrativa, o tipo de trabalho que a agência apresenta ao cliente como produção. É isso que protege a reputação da agência perante o cliente final.">
+        <div class="faq-item" data-group="agencias" data-answer="Um freelancer entrega um vídeo. A WillScope entrega uma peça com direção visual e narrativa, o tipo de trabalho que a agência apresenta ao cliente como produção. É isso que protege a reputação da agência perante o cliente final.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Qual é a diferença real entre contratar a WillScope e um freelancer qualquer para a agência?</span>
@@ -1082,7 +1133,7 @@ label .req{color:var(--orange);}
             </div>
           </div>
         </div>
-        <div class="faq-item" data-answer="O processo tem 4 fases fixas: diagnóstico e conceito, pré-produção, filmagem e pós-produção. Validamos a direção criativa com a agência antes de avançar para a filmagem, e enviamos a primeira versão editada para aprovação antes da entrega final. Isso dá pontos de controlo claros para acompanhar o projeto sem depender de reunião constante. Em breve teremos também uma plataforma do cliente, para acompanhar cada fase em tempo real.">
+        <div class="faq-item" data-group="agencias" data-answer="O processo tem 4 fases fixas: diagnóstico e conceito, pré-produção, filmagem e pós-produção. Validamos a direção criativa com a agência antes de avançar para a filmagem, e enviamos a primeira versão editada para aprovação antes da entrega final. Isso dá pontos de controlo claros para acompanhar o projeto sem depender de reunião constante. Em breve teremos também uma plataforma do cliente, para acompanhar cada fase em tempo real.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Como funciona o acompanhamento do projeto? A agência fica sabendo em que fase está?</span>
@@ -1099,7 +1150,7 @@ label .req{color:var(--orange);}
           </div>
         </div>
         <h3 class="faq-group-h">Para empresas que querem uma equipa interna</h3>
-        <div class="faq-item" data-answer="As duas formas. Para empresas que precisam de conteúdo com regularidade, montamos um plano mensal ou trimestral, com volume e prazo definidos à partida.">
+        <div class="faq-item" data-group="equipa" data-answer="As duas formas. Para empresas que precisam de conteúdo com regularidade, montamos um plano mensal ou trimestral, com volume e prazo definidos à partida.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Trabalham com contrato recorrente ou só por projeto único?</span>
@@ -1115,7 +1166,7 @@ label .req{color:var(--orange);}
             </div>
           </div>
         </div>
-        <div class="faq-item" data-answer="Não há custo de contratação nem de formação de equipa. Tratamos cada vídeo com cuidado cinematográfico, com direção e organização já testadas em vários projetos.">
+        <div class="faq-item" data-group="equipa" data-answer="Não há custo de contratação nem de formação de equipa. Tratamos cada vídeo com cuidado cinematográfico, com direção e organização já testadas em vários projetos.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Qual é a vantagem de contratar uma produtora externa em vez de ter alguém fixo na equipa?</span>
@@ -1132,7 +1183,7 @@ label .req{color:var(--orange);}
           </div>
         </div>
         <h3 class="faq-group-h">Para marcas em fase de lançamento</h3>
-        <div class="faq-item" data-answer="A primeira impressão de uma marca nova é o vídeo que ela mostra no lançamento. Quando esse vídeo é cinematográfico e bem pensado, é assim que o público vai lembrar a marca desde o primeiro dia. Conteúdo genérico de lançamento passa em branco. Um vídeo com direção visual forte fica.">
+        <div class="faq-item" data-group="lancamento" data-answer="A primeira impressão de uma marca nova é o vídeo que ela mostra no lançamento. Quando esse vídeo é cinematográfico e bem pensado, é assim que o público vai lembrar a marca desde o primeiro dia. Conteúdo genérico de lançamento passa em branco. Um vídeo com direção visual forte fica.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Por que o lançamento de uma marca precisa de vídeo cinematográfico, e não só conteúdo qualquer para redes sociais?</span>
@@ -1148,7 +1199,7 @@ label .req{color:var(--orange);}
             </div>
           </div>
         </div>
-        <div class="faq-item" data-answer="Montamos o calendário de produção a partir da data de lançamento, a contar para trás, para garantir que cada peça fica pronta a tempo.">
+        <div class="faq-item" data-group="lancamento" data-answer="Montamos o calendário de produção a partir da data de lançamento, a contar para trás, para garantir que cada peça fica pronta a tempo.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Conseguem garantir que tudo fica pronto a tempo da data de lançamento?</span>
@@ -1164,7 +1215,7 @@ label .req{color:var(--orange);}
             </div>
           </div>
         </div>
-        <div class="faq-item" data-answer="As duas coisas. O vídeo funciona melhor dentro de um plano maior, por isso ajudamos a pensar posicionamento visual, que conteúdo lançar, em que ordem e em que plataformas, antes de chegar à fase de filmagem.">
+        <div class="faq-item" data-group="lancamento" data-answer="As duas coisas. O vídeo funciona melhor dentro de um plano maior, por isso ajudamos a pensar posicionamento visual, que conteúdo lançar, em que ordem e em que plataformas, antes de chegar à fase de filmagem.">
           <button class="faq-q" type="button">
             <span class="faq-icon">?</span>
             <span class="q-text">Fazem só o vídeo, ou ajudam também a pensar a estratégia de conteúdo e posicionamento do lançamento?</span>
@@ -1569,6 +1620,26 @@ form.addEventListener('submit', async (e) => {
   if(submitBtn) submitBtn.disabled = false;
 });
 
+/* ---------- FAQ: filtros por categoria ---------- */
+(function(){
+  const filterBtns = document.querySelectorAll('#faqFilters .faq-filter');
+  const groupHeaders = document.querySelectorAll('#faqList .faq-group-h');
+  const faqItems = document.querySelectorAll('#faqList .faq-item');
+  if(!filterBtns.length) return;
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+      const showAll = filter === 'todos';
+      groupHeaders.forEach(h => { h.style.display = showAll ? '' : 'none'; });
+      faqItems.forEach(item => {
+        item.style.display = (showAll || item.dataset.group === filter) ? '' : 'none';
+      });
+    });
+  });
+})();
+
 /* ---------- FAQ estilo IA (pensando + digitação com fade) ---------- */
 (function(){
   const items = document.querySelectorAll('#faqList .faq-item');
@@ -1710,43 +1781,45 @@ form.addEventListener('submit', async (e) => {
 })();
 </script>
 
-<!-- ---------- GSAP: linhas reveladas no scroll (secção "Como produzimos") ---------- -->
+<!-- ---------- GSAP: linhas reveladas no scroll (títulos de secção) ---------- -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/SplitText.min.js"></script>
 <script>
 (function(){
-  const heading = document.getElementById('procTitle');
-  if(!heading) return;
+  const headings = document.querySelectorAll('.gsap-lines');
+  if(!headings.length) return;
 
-  // sem GSAP disponível (ex: falha de rede) ou movimento reduzido: mostra o título normalmente, sem animação
+  // sem GSAP disponível (ex: falha de rede) ou movimento reduzido: mostra os títulos normalmente, sem animação
   if(typeof gsap === 'undefined' || typeof SplitText === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReduced){
-    heading.style.opacity = 1;
+    headings.forEach(h => { h.style.opacity = 1; });
     return;
   }
 
   gsap.registerPlugin(SplitText, ScrollTrigger);
-  gsap.set(heading, { opacity: 1 });
+  gsap.set(headings, { opacity: 1 });
 
   document.fonts.ready.then(() => {
-    SplitText.create(heading, {
-      type: 'words,lines',
-      mask: 'lines',
-      linesClass: 'line',
-      autoSplit: true,
-      onSplit(instance){
-        return gsap.from(instance.lines, {
-          yPercent: 120,
-          stagger: 0.12,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: heading,
-            scrub: true,
-            start: 'clamp(top center)',
-            end: 'clamp(bottom center)'
-          }
-        });
-      }
+    headings.forEach(heading => {
+      SplitText.create(heading, {
+        type: 'words,lines',
+        mask: 'lines',
+        linesClass: 'line',
+        autoSplit: true,
+        onSplit(instance){
+          return gsap.from(instance.lines, {
+            yPercent: 120,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: heading,
+              scrub: true,
+              start: 'clamp(top center)',
+              end: 'clamp(bottom center)'
+            }
+          });
+        }
+      });
     });
   });
 })();
