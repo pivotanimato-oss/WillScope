@@ -148,6 +148,48 @@ img{max-width:100%;display:block;}
 .btn--ghost:hover{background:var(--ink);color:var(--white);}
 .btn--sm{padding:9px 16px;font-size:12px;}
 
+/* ---------- specular button (efeito estilo ReactBits: aro de luz que segue o cursor) ---------- */
+@property --sb-angle{syntax:'<angle>';inherits:false;initial-value:90deg;}
+.btn--specular{
+  position:relative;
+  isolation:isolate;
+  --sb-shine:5deg;
+  --sb-fade:40deg;
+  --sb-intensity:.8;
+  --sb-angle:90deg;
+  --sb-bright:0;
+  transition:--sb-angle .5s cubic-bezier(.22,1,.36,1);
+}
+.btn--specular::after{
+  content:'';
+  position:absolute;
+  inset:-3px;
+  border-radius:calc(var(--radius) + 3px);
+  padding:3px;
+  background:conic-gradient(from 0deg,
+    transparent calc(var(--sb-angle) - var(--sb-shine) - var(--sb-fade)),
+    rgba(255,255,255,var(--sb-intensity)) calc(var(--sb-angle) - var(--sb-shine)),
+    rgba(255,255,255,var(--sb-intensity)) calc(var(--sb-angle) + var(--sb-shine)),
+    transparent calc(var(--sb-angle) + var(--sb-shine) + var(--sb-fade)),
+    transparent calc(var(--sb-angle) + 180deg - var(--sb-shine) - var(--sb-fade)),
+    rgba(255,255,255,var(--sb-intensity)) calc(var(--sb-angle) + 180deg - var(--sb-shine)),
+    rgba(255,255,255,var(--sb-intensity)) calc(var(--sb-angle) + 180deg + var(--sb-shine)),
+    transparent calc(var(--sb-angle) + 180deg + var(--sb-shine) + var(--sb-fade))
+  );
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  filter:blur(.5px);
+  opacity:var(--sb-bright);
+  transition:opacity .35s ease;
+  pointer-events:none;
+  z-index:2;
+}
+@media (prefers-reduced-motion: reduce){
+  .btn--specular::after{display:none;}
+}
+
 /* ---------- hero ---------- */
 .hero{
   position:relative;
@@ -367,6 +409,8 @@ img{max-width:100%;display:block;}
 .sol-card p{color:var(--ink-soft);font-size:15px;}
 
 /* ---------- processo ---------- */
+#procTitle{opacity:0;} /* evita flash antes do GSAP montar o split; o próprio script trata do fallback */
+#procTitle .line{will-change:transform;}
 .proc-list{border-top:1px solid var(--line);max-width:1180px;margin:0 auto;}
 .proc-head{
   padding-top:32px;padding-bottom:24px;margin-bottom:0;
@@ -731,7 +775,7 @@ label .req{color:var(--orange);}
         <h1>The <em>right eyes</em>,<br>to your brand.</h1>
         <div class="hero-ctas">
           <a href="#formulario" class="btn btn--primary">Pedir Orçamento Grátis</a>
-          <a href="#portfolio" class="btn btn--ghost">Ver Portfólio</a>
+          <a href="#portfolio" class="btn btn--ghost btn--specular">Ver Portfólio</a>
         </div>
       </div>
     </div>
@@ -864,8 +908,8 @@ label .req{color:var(--orange);}
   <!-- PROCESSO -->
   <section class="section" id="processo">
     <div class="wrap">
-      <div class="section-head proc-head reveal">
-        <h2>Como produzimos a sua produção audiovisual</h2>
+      <div class="section-head proc-head">
+        <h2 id="procTitle">Como produzimos a sua produção audiovisual</h2>
       </div>
       <div class="proc-list">
         <!-- troca as imagens de fundo abaixo (assets/proc/01.jpg até 04.jpg) pelas fotos reais de cada etapa -->
@@ -1283,6 +1327,29 @@ document.querySelectorAll('.port-card').forEach(card => {
   });
 });
 
+/* ---------- specular button: aro de luz que segue o cursor (estilo ReactBits) ---------- */
+(function initSpecularButtons(){
+  const els = document.querySelectorAll('.btn--specular');
+  if(!els.length || prefersReduced) return;
+  const PROXIMITY = 80; // px — mesmo valor da referência (proximity=80)
+  function onPointerMove(e){
+    els.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = Math.max(rect.left - e.clientX, 0, e.clientX - rect.right);
+      const dy = Math.max(rect.top - e.clientY, 0, e.clientY - rect.bottom);
+      const dist = Math.hypot(dx, dy);
+      const angleDeg = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI + 90;
+      const t = Math.max(0, 1 - dist / PROXIMITY);
+      const bright = t * t * (3 - 2 * t); // smoothstep
+      el.style.setProperty('--sb-angle', angleDeg + 'deg');
+      el.style.setProperty('--sb-bright', bright);
+    });
+  }
+  window.addEventListener('pointermove', onPointerMove, { passive:true });
+})();
+
 /* ---------- scrubber de scroll ---------- */
 const scrubber = document.getElementById('scrubber');
 function updateScrubber(){
@@ -1640,6 +1707,48 @@ form.addEventListener('submit', async (e) => {
   });
 
   window.addEventListener('resize', () => { target = clamp(target); });
+})();
+</script>
+
+<!-- ---------- GSAP: linhas reveladas no scroll (secção "Como produzimos") ---------- -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/SplitText.min.js"></script>
+<script>
+(function(){
+  const heading = document.getElementById('procTitle');
+  if(!heading) return;
+
+  // sem GSAP disponível (ex: falha de rede) ou movimento reduzido: mostra o título normalmente, sem animação
+  if(typeof gsap === 'undefined' || typeof SplitText === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReduced){
+    heading.style.opacity = 1;
+    return;
+  }
+
+  gsap.registerPlugin(SplitText, ScrollTrigger);
+  gsap.set(heading, { opacity: 1 });
+
+  document.fonts.ready.then(() => {
+    SplitText.create(heading, {
+      type: 'words,lines',
+      mask: 'lines',
+      linesClass: 'line',
+      autoSplit: true,
+      onSplit(instance){
+        return gsap.from(instance.lines, {
+          yPercent: 120,
+          stagger: 0.12,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: heading,
+            scrub: true,
+            start: 'clamp(top center)',
+            end: 'clamp(bottom center)'
+          }
+        });
+      }
+    });
+  });
 })();
 </script>
 
