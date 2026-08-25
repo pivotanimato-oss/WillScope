@@ -604,10 +604,10 @@ img{max-width:100%;display:block;}
 }
 .faq-item.is-open .faq-q .faq-caret{transform:rotate(180deg);color:var(--red);}
 .faq-a{
-  display:grid;grid-template-rows:0fr;overflow:hidden;
+  display:grid;grid-template-rows:minmax(0,0fr);overflow:hidden;
   transition:grid-template-rows .45s cubic-bezier(.22,1,.36,1);
 }
-.faq-item.is-open .faq-a{grid-template-rows:1fr;}
+.faq-item.is-open .faq-a{grid-template-rows:minmax(0,1fr);}
 .faq-a-inner{
   min-height:0;overflow:hidden;
   padding:0 26px 26px 74px;
