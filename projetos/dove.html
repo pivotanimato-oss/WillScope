@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto Dove | WillScope</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon-512.png">
+<link rel="apple-touch-icon" href="../assets/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   TEMPLATE DE PROJETO — como duplicar para os outros
+   1) Copia este ficheiro e renomeia (ex: puma.html, esthesis.html...)
+   2) Troca o <title>, o PROJ_CLIENTE, PROJ_CATEGORIA, PROJ_DESCRICAO
+   3) Troca o gradiente do .proj-hero (usa a cor .t1 até .t9 do index)
+   4) Troca o src do <video id="projHeroVideo"> pelo vídeo real do projeto
+      (sobe o ficheiro no Cloudinary em willscope/projetos/nome-do-projeto.mp4)
+      — ao clicar no hero, o texto/degradê somem e o vídeo toca com som;
+        clicando de novo volta ao estado inicial (toggle)
+   5) Adiciona/remove blocos .video-block conforme o nº de vídeos
+   6) O link "← Voltar ao portfólio" já aponta para ../index.html#portfolio
+   ============================================================ */
+
+:root{
+  --white:#FFFFFF;
+  --smoke:#F4F4F2;
+  --ink:#15100D;
+  --ink-soft:#5B534E;
+  --red:#E63428;
+  --red-dark:#B0221A;
+  --orange:#FF7A1A;
+  --line:#E9E5E1;
+  --radius:2px;
+  --max:none;
+  --gutter:clamp(20px, 5vw, 96px);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+html.js-floaty-scroll{scroll-behavior:auto;}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto;}}
+
+body{
+  margin:0;
+  background:var(--white);
+  color:var(--ink);
+  font-family:'Work Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.6;
+}
+
+h1,h2,h3{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:900;
+  letter-spacing:.01em;
+  margin:0;
+  text-transform:uppercase;
+}
+
+.mono{
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.06em;
+}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
+
+/* header */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  height:72px;
+}
+.logo{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;letter-spacing:.02em;}
+.logo span{color:var(--red);}
+.logo-mark{height:30px;width:auto;display:block;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 22px;border-radius:var(--radius);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+  text-decoration:none;letter-spacing:.03em;
+  border:1px solid var(--ink);cursor:pointer;
+  transition:transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s cubic-bezier(.22,1,.36,1), background .3s ease, border-color .3s ease, color .3s ease;
+}
+.btn--primary{background:var(--ink);color:var(--white);}
+.btn--primary:hover{background:var(--red);border-color:var(--red);transform:translateY(-2px);box-shadow:0 10px 24px -8px rgba(230,52,40,.45);}
+.btn--sm{padding:10px 18px;font-size:12px;}
+.btn--ghost{background:transparent;color:var(--ink);}
+.btn--ghost:hover{background:var(--ink);color:var(--white);transform:translateY(-2px);}
+
+/* voltar */
+.back-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;
+  color:var(--ink-soft);text-decoration:none;margin:32px 0 0;
+  transition:color .3s ease, transform .3s cubic-bezier(.22,1,.36,1);
+}
+.back-link:hover{color:var(--red);transform:translateX(-4px);}
+
+/* topo do projeto — a página já carrega em dark mode / cinema, sem precisar de clicar */
+.proj-meta{
+  display:flex;gap:clamp(20px,4vw,56px);flex-wrap:wrap;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;
+  margin-top:28px;
+}
+.proj-meta .pm-label{color:rgba(243,240,236,.5);margin-right:6px;}
+.proj-meta .pm-value{color:#f3f0ec;font-weight:600;}
+
+/* hero em modo cinema: fundo full-bleed (o próprio vídeo ampliado/desfocado,
+   já que não há foto still separada) + vídeo nítido centrado por cima */
+.proj-hero{
+  position:relative;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-top:20px;
+  height:64vh;min-height:400px;
+  background:#000;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.proj-hero-bg{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  object-fit:cover;
+  filter:blur(0px) brightness(1) saturate(1.1);
+  transition:filter .6s cubic-bezier(.22,1,.36,1);
+  transform:scale(1.04);
+  background:#000;
+}
+.proj-hero.is-playing .proj-hero-bg{
+  filter:blur(22px) brightness(.7) saturate(1.15);
+}
+.proj-hero-scrim{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,0) 0%,rgba(0,0,0,.18) 100%);
+  transition:background .6s cubic-bezier(.22,1,.36,1);
+}
+.proj-hero.is-playing .proj-hero-scrim{
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.08) 0%,rgba(0,0,0,.42) 100%);
+}
+.proj-hero-stage{
+  position:relative;z-index:2;
+  width:min(92vw,1600px);
+  max-height:100%;
+  aspect-ratio:16/9;
+  box-shadow:0 50px 120px rgba(0,0,0,.65);
+  border-radius:6px;overflow:hidden;
+  background:#000;
+}
+.proj-hero-stage video{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+
+/* barra de controlo custom — sempre visível, estilo FilmLaab */
+.proj-hero-controls{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  display:flex;align-items:center;gap:14px;
+  padding:14px clamp(16px,3vw,28px);
+  background:linear-gradient(0deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,0) 100%);
+}
+.cc-btn{
+  width:26px;height:26px;flex-shrink:0;border:0;background:transparent;padding:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  color:#fff;opacity:.92;
+  transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
+}
+.cc-btn:hover{opacity:1;transform:scale(1.1);}
+.cc-btn svg{width:16px;height:16px;}
+.cc-time{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.85);
+  flex-shrink:0;min-width:32px;
+}
+.cc-time.cc-duration{text-align:right;}
+.cc-seek{flex:1;height:16px;display:flex;align-items:center;cursor:pointer;}
+.cc-seek-track{position:relative;width:100%;height:3px;background:rgba(255,255,255,.25);border-radius:2px;}
+.cc-seek-fill{position:absolute;left:0;top:0;height:100%;width:0%;background:#fff;border-radius:2px;}
+.cc-seek-thumb{
+  position:absolute;top:50%;left:0%;width:11px;height:11px;border-radius:50%;
+  background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.15);
+}
+.cc-vol-wrap{display:flex;align-items:center;gap:8px;}
+.cc-vol-bar{width:64px;height:14px;display:flex;align-items:center;cursor:pointer;}
+.cc-vol-track{position:relative;width:100%;height:3px;background:rgba(255,255,255,.25);border-radius:2px;}
+.cc-vol-fill{position:absolute;left:0;top:0;height:100%;width:100%;background:#fff;border-radius:2px;}
+.cc-vol-thumb{
+  position:absolute;top:50%;left:100%;width:9px;height:9px;border-radius:50%;
+  background:#fff;transform:translate(-50%,-50%);
+}
+@media (max-width:640px){
+  .cc-vol-bar{display:none;}
+  .proj-hero{height:46vh;min-height:280px;}
+}
+
+/* corpo */
+.proj-body{
+  display:grid;grid-template-columns:2fr 1fr;gap:56px;
+  margin:56px 0 72px;
+}
+.proj-text p{color:var(--ink-soft);font-size:16px;margin:0 0 18px;max-width:60ch;}
+.proj-text h3{font-size:20px;margin:32px 0 12px;}
+
+.proj-facts{
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px;height:fit-content;
+}
+.proj-fact{padding:14px 0;border-bottom:1px solid var(--line);}
+.proj-fact:last-child{border-bottom:none;}
+.proj-fact .mono{font-size:10px;color:var(--red);text-transform:uppercase;}
+.proj-fact div{font-size:15px;font-weight:600;margin-top:4px;}
+
+/* vídeos */
+.video-section{margin:56px 0 80px;}
+.video-section > .mono{font-size:11px;color:var(--red);text-transform:uppercase;}
+.video-section > h2{margin-top:8px;margin-bottom:32px;font-size:clamp(24px,4vw,36px);}
+.video-grid{display:grid;grid-template-columns:1fr;gap:32px;}
+.video-block{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.video-embed{
+  aspect-ratio:16/9;width:100%;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+}
+.video-embed iframe{width:100%;height:100%;border:0;display:block;}
+.video-caption{padding:16px 20px;}
+.video-caption .mono{font-size:10px;color:var(--red);text-transform:uppercase;}
+.video-caption p{margin:6px 0 0;color:var(--ink-soft);font-size:14px;}
+
+/* cta */
+.proj-cta{
+  text-align:center;padding:56px 24px;background:var(--smoke);
+  border-radius:var(--radius);margin-bottom:72px;
+}
+.proj-cta h2{font-size:clamp(24px,4vw,36px);margin-bottom:16px;}
+.proj-cta p{color:var(--ink-soft);margin-bottom:24px;}
+
+/* footer */
+.footer{background:var(--ink);color:var(--white);padding:48px 0 24px;}
+.footer-top{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.12);
+  flex-wrap:wrap;gap:16px;
+}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;}
+.footer-links a:hover{color:var(--white);}
+.footer-bottom{
+  display:flex;justify-content:space-between;padding-top:20px;
+  font-size:13px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:8px;
+}
+
+@media (max-width:820px){
+  .proj-body{grid-template-columns:1fr;}
+}
+
+/* ---- dark mode permanente para toda a página do projeto ---- */
+body{background:#0a0a0a;color:#f3f0ec;}
+.topbar{background:rgba(10,10,10,.85);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.1);}
+.logo{color:#f3f0ec;}
+.btn{border-color:rgba(255,255,255,.35);}
+.btn--primary{background:#f3f0ec;color:#0a0a0a;}
+.btn--primary:hover{background:var(--red);border-color:var(--red);color:#fff;}
+.btn--ghost{color:#f3f0ec;}
+.btn--ghost:hover{background:#f3f0ec;color:#0a0a0a;}
+.back-link{color:rgba(243,240,236,.55);}
+.back-link:hover{color:var(--red);}
+.proj-text p{color:rgba(243,240,236,.75);}
+.proj-text h3{color:#f3f0ec;}
+.proj-facts{border-color:rgba(255,255,255,.14);}
+.proj-fact{border-bottom-color:rgba(255,255,255,.14);}
+.proj-fact div{color:#f3f0ec;}
+.video-section > h2{color:#f3f0ec;}
+.video-block{border-color:rgba(255,255,255,.14);}
+.video-caption p{color:rgba(243,240,236,.65);}
+.proj-cta{background:#161412;}
+.proj-cta h2{color:#f3f0ec;}
+
+/* ---------- reveal on scroll (mesmo efeito "puxar o foco" da home) ---------- */
+.reveal{
+  opacity:0;
+  filter:blur(10px);
+  transform:translateY(18px);
+  transition:opacity .8s cubic-bezier(.22,1,.36,1), filter .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
+}
+.reveal.in-view{opacity:1;filter:blur(0);transform:none;}
+.reveal--delay-1{transition-delay:.1s;}
+@media (prefers-reduced-motion: reduce){
+  .reveal{transition:none;opacity:1;filter:none;transform:none;}
+}
+
+/* ---------- entrada suave do hero do projeto ao carregar ---------- */
+.proj-hero{
+  opacity:0;filter:blur(16px);transform:translateY(14px);
+  transition:opacity 1s cubic-bezier(.22,1,.36,1), filter 1s cubic-bezier(.22,1,.36,1), transform 1s cubic-bezier(.22,1,.36,1);
+}
+.proj-hero.is-focused{opacity:1;filter:blur(0);transform:none;}
+@media (prefers-reduced-motion: reduce){
+  .proj-hero{transition:none;opacity:1;filter:none;transform:none;}
+}
+
+/* ---------- micro-interações mais fluidas ---------- */
+.proj-hero-stage{transition:transform .5s cubic-bezier(.22,1,.36,1);}
+.video-block{transition:transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s cubic-bezier(.22,1,.36,1);}
+.video-block:hover{transform:translateY(-4px);box-shadow:0 24px 48px -24px rgba(0,0,0,.6);}
+.proj-fact{transition:padding-left .3s cubic-bezier(.22,1,.36,1);}
+.proj-fact:hover{padding-left:6px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a href="../index.html" style="text-decoration:none;color:inherit;"><img class="logo-mark" src="../assets/logo-mark.png" alt="WillScope"></a>
+    <a href="../index.html#formulario" class="btn btn--primary btn--sm">Pedir Orçamento</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <a href="../index.html#portfolio" class="back-link mono">← VOLTAR AO PORTFÓLIO</a>
+
+  <!-- HERO — troca o gradiente (usa uma das cores t1-t9 do index.html) e o texto -->
+  <!-- Troca o src do video pelo vídeo real do projeto (mesmo ficheiro do #portfolio da home, ou um específico) -->
+  <div class="proj-meta reveal">
+    <div><span class="pm-label mono">Client:</span><span class="pm-value">Dove</span></div>
+    <div><span class="pm-label mono">Year:</span><span class="pm-value">2026</span></div>
+    <div><span class="pm-label mono">Type:</span><span class="pm-value">Comercial</span></div>
+  </div>
+
+  <div class="proj-hero" id="projHero">
+    <canvas class="proj-hero-bg" aria-hidden="true"></canvas>
+    <div class="proj-hero-scrim"></div>
+    <div class="proj-hero-stage">
+      <video id="projHeroVideo" playsinline preload="auto" crossorigin="anonymous">
+        <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1787934342/fullhd_p9nfh1.mp4" type="video/mp4">
+      </video>
+      <div class="proj-hero-controls">
+        <button type="button" class="cc-btn cc-play" aria-label="Play/Pausa">
+          <svg class="cc-icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+          <svg class="cc-icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+        </button>
+        <span class="cc-time cc-current">0:00</span>
+        <div class="cc-seek"><div class="cc-seek-track"><div class="cc-seek-fill"></div><div class="cc-seek-thumb"></div></div></div>
+        <span class="cc-time cc-duration">0:00</span>
+        <div class="cc-vol-wrap">
+          <button type="button" class="cc-btn cc-mute" aria-label="Volume">
+            <svg class="cc-icon-vol-on" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M16.5 12c0-1.5-.8-2.8-2-3.5v7c1.2-.7 2-2 2-3.5z"/></svg>
+            <svg class="cc-icon-vol-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;"><path fill="currentColor" stroke="none" d="M4 9v6h4l5 5V4L8 9H4z"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
+          </button>
+          <div class="cc-vol-bar"><div class="cc-vol-track"><div class="cc-vol-fill"></div><div class="cc-vol-thumb"></div></div></div>
+        </div>
+        <button type="button" class="cc-btn cc-fullscreen" aria-label="Ecrã inteiro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <!-- TEXTO E FICHA ABAIXO SÃO PLACEHOLDER — troca pelos detalhes reais do briefing da Dove -->
+    <div class="proj-text reveal">
+      <h3>Sobre a produção</h3>
+      <p>
+        Pensámos este projeto para a Dove com uma imagem cuidada e próxima, fiel ao território de beleza real da marca.
+      </p>
+      <p>
+        Planeámos a captação e a pós-produção para manter o mesmo padrão visual em todos os cortes do projeto.
+      </p>
+      <h3>Processo</h3>
+      <p>
+        Filmámos e fechámos a edição e color grading com foco em transmitir cuidado e naturalidade, o tom que a Dove pede em cada peça.
+      </p>
+    </div>
+
+    <div class="proj-facts reveal reveal--delay-1">
+      <div class="proj-fact">
+        <span class="mono">Cliente</span>
+        <div>Dove</div>
+      </div>
+      <div class="proj-fact">
+        <span class="mono">Categoria</span>
+        <div>Comercial</div>
+      </div>
+      <div class="proj-fact">
+        <span class="mono">Serviços</span>
+        <div>Guião, Filmagem, Edição, Color Grading</div>
+      </div>
+      <div class="proj-fact">
+        <span class="mono">Duração</span>
+        <div>1 dia de filmagem</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VÍDEOS — duplica o .video-block pra cada vídeo novo da Dove que fores adicionando -->
+  <div class="video-section">
+    <span class="mono">Resultado</span>
+    <h2>Vídeos do projeto</h2>
+    <div class="video-grid">
+
+      <div class="video-block reveal">
+        <div class="video-embed">
+          <video controls preload="metadata" style="width:100%;height:100%;display:block;">
+            <source src="https://res.cloudinary.com/g0tgkcpt/video/upload/v1787934342/fullhd_p9nfh1.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-caption">
+          <span class="mono">Versão principal</span>
+          <p>Beleza real em cada plano.</p>
+        </div>
+      </div>
+
+      <!-- Próximo vídeo da Dove: copia o bloco acima, troca o src do <source> e a legenda -->
+
+    </div>
+  </div>
+
+  <div class="proj-cta reveal">
+    <h2>Gostaste do resultado?</h2>
+    <p>Vamos falar sobre o teu próximo projeto.</p>
+    <a href="../index.html#formulario" class="btn btn--primary">Quero um Vídeo Assim</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
+      <div class="footer-links">
+        <a href="../index.html#portfolio">Portfólio</a>
+        <a href="../index.html#faq">FAQ</a>
+        <a href="../index.html#formulario">Contacto</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 WillScope. Produção de vídeo em Lisboa, Portugal.</span>
+      <span class="mono">ola@willscope.pt</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const video = document.getElementById('projHeroVideo');
+  const bgVideo = document.querySelector('.proj-hero-bg');
+  if(!video) return;
+
+  if(bgVideo && bgVideo.tagName === 'CANVAS'){
+    const bgCtx = bgVideo.getContext('2d');
+    function sizeBgCanvas(){
+      const rect = bgVideo.getBoundingClientRect();
+      if(!rect.width || !rect.height) return;
+      const maxDim = 720;
+      const scale = Math.min(1, maxDim / Math.max(rect.width, rect.height));
+      const w = Math.max(1, Math.round(rect.width * scale));
+      const h = Math.max(1, Math.round(rect.height * scale));
+      if(bgVideo.width !== w || bgVideo.height !== h){
+        bgVideo.width = w;
+        bgVideo.height = h;
+      }
+    }
+    function drawBgFrame(){
+      if(!video.videoWidth) return;
+      sizeBgCanvas();
+      const cw = bgVideo.width, ch = bgVideo.height;
+      if(!cw || !ch) return;
+      const vw = video.videoWidth, vh = video.videoHeight;
+      const srcRatio = vw / vh, dstRatio = cw / ch;
+      let sx, sy, sw, sh;
+      if(srcRatio > dstRatio){
+        sh = vh; sw = vh * dstRatio; sx = (vw - sw) / 2; sy = 0;
+      } else {
+        sw = vw; sh = vw / dstRatio; sx = 0; sy = (vh - sh) / 2;
+      }
+      try{ bgCtx.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch); }catch(e){}
+    }
+    video.addEventListener('loadeddata', drawBgFrame, { once:true });
+    window.addEventListener('resize', drawBgFrame);
+    let bgRafId = null;
+    let bgLastDraw = 0;
+    function bgLoop(ts){
+      if(!bgLastDraw || ts - bgLastDraw >= 40){
+        drawBgFrame();
+        bgLastDraw = ts;
+      }
+      bgRafId = requestAnimationFrame(bgLoop);
+    }
+    video.addEventListener('play', () => {
+      if(bgRafId) return;
+      bgRafId = requestAnimationFrame(bgLoop);
+    });
+    video.addEventListener('pause', () => {
+      if(bgRafId){ cancelAnimationFrame(bgRafId); bgRafId = null; }
+    });
+    video.addEventListener('seeked', drawBgFrame);
+  }
+
+  const playBtn = document.querySelector('.cc-play');
+  const iconPlay = document.querySelector('.cc-icon-play');
+  const iconPause = document.querySelector('.cc-icon-pause');
+  const curEl = document.querySelector('.cc-current');
+  const durEl = document.querySelector('.cc-duration');
+  const seek = document.querySelector('.cc-seek');
+  const seekFill = document.querySelector('.cc-seek-fill');
+  const seekThumb = document.querySelector('.cc-seek-thumb');
+  const muteBtn = document.querySelector('.cc-mute');
+  const iconVolOn = document.querySelector('.cc-icon-vol-on');
+  const iconVolOff = document.querySelector('.cc-icon-vol-off');
+  const volBar = document.querySelector('.cc-vol-bar');
+  const volFill = document.querySelector('.cc-vol-fill');
+  const volThumb = document.querySelector('.cc-vol-thumb');
+  const fullBtn = document.querySelector('.cc-fullscreen');
+  const player = document.querySelector('.proj-hero-stage');
+
+  function fmt(s){
+    if(!isFinite(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return m + ':' + sec;
+  }
+
+  function setPlayingIcon(playing){
+    iconPlay.style.display = playing ? 'none' : '';
+    iconPause.style.display = playing ? '' : 'none';
+  }
+
+  function togglePlay(){
+    if(video.paused){ video.play().catch(() => {}); }
+    else{ video.pause(); }
+  }
+  playBtn.addEventListener('click', togglePlay);
+  const heroEl = document.getElementById('projHero');
+  video.addEventListener('play', () => { setPlayingIcon(true); if(heroEl) heroEl.classList.add('is-playing'); });
+  video.addEventListener('pause', () => { setPlayingIcon(false); if(heroEl) heroEl.classList.remove('is-playing'); });
+
+  video.addEventListener('loadedmetadata', () => {
+    durEl.textContent = fmt(video.duration);
+  });
+  video.addEventListener('timeupdate', () => {
+    if(!video.duration) return;
+    const pct = (video.currentTime / video.duration) * 100;
+    seekFill.style.width = pct + '%';
+    seekThumb.style.left = pct + '%';
+    curEl.textContent = fmt(video.currentTime);
+  });
+
+  function scrub(clientX){
+    const rect = seek.getBoundingClientRect();
+    let pct = (clientX - rect.left) / rect.width;
+    pct = Math.min(1, Math.max(0, pct));
+    if(video.duration){
+      video.currentTime = pct * video.duration;
+    }
+  }
+  let seeking = false;
+  seek.addEventListener('mousedown', (e) => { seeking = true; scrub(e.clientX); });
+  window.addEventListener('mousemove', (e) => { if(seeking) scrub(e.clientX); });
+  window.addEventListener('mouseup', () => { seeking = false; });
+  seek.addEventListener('touchstart', (e) => { seeking = true; scrub(e.touches[0].clientX); }, { passive:true });
+  seek.addEventListener('touchmove', (e) => { if(seeking) scrub(e.touches[0].clientX); }, { passive:true });
+  window.addEventListener('touchend', () => { seeking = false; });
+
+  function setVolUI(vol, muted){
+    const pct = muted ? 0 : vol * 100;
+    volFill.style.width = pct + '%';
+    volThumb.style.left = pct + '%';
+    iconVolOn.style.display = muted ? 'none' : '';
+    iconVolOff.style.display = muted ? '' : 'none';
+  }
+  video.volume = 1;
+  setVolUI(1, false);
+  muteBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    setVolUI(video.volume, video.muted);
+  });
+  function scrubVol(clientX){
+    const rect = volBar.getBoundingClientRect();
+    let pct = (clientX - rect.left) / rect.width;
+    pct = Math.min(1, Math.max(0, pct));
+    video.volume = pct;
+    video.muted = pct === 0;
+    setVolUI(pct, video.muted);
+  }
+  let volDragging = false;
+  volBar.addEventListener('mousedown', (e) => { volDragging = true; scrubVol(e.clientX); });
+  window.addEventListener('mousemove', (e) => { if(volDragging) scrubVol(e.clientX); });
+  window.addEventListener('mouseup', () => { volDragging = false; });
+
+  fullBtn.addEventListener('click', () => {
+    if(document.fullscreenElement){ document.exitFullscreen(); }
+    else{ player.requestFullscreen().catch(() => {}); }
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- floaty scroll (inercia suave, igual a home) ---------- */
+  (function(){
+    var isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    if(prefersReduced || isCoarsePointer) return;
+    document.documentElement.classList.add('js-floaty-scroll');
+    var EASE = 0.085;
+    var current = window.scrollY;
+    var target = current;
+    var raf = null;
+    function maxScroll(){ return document.documentElement.scrollHeight - window.innerHeight; }
+    function clamp(v){ return Math.max(0, Math.min(v, maxScroll())); }
+    function tick(){
+      current += (target - current) * EASE;
+      if(Math.abs(target - current) < 0.4){
+        current = target; window.scrollTo(0, current); raf = null; return;
+      }
+      window.scrollTo(0, current);
+      raf = requestAnimationFrame(tick);
+    }
+    function onWheel(e){
+      e.preventDefault();
+      target = clamp(target + e.deltaY);
+      if(!raf) raf = requestAnimationFrame(tick);
+    }
+    window.addEventListener('wheel', onWheel, { passive:false });
+    window.addEventListener('scroll', function(){
+      if(!raf){ current = window.scrollY; target = current; }
+    }, { passive:true });
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click', function(e){
+        var id = a.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if(!el) return;
+        e.preventDefault();
+        target = clamp(el.getBoundingClientRect().top + window.scrollY);
+        if(!raf) raf = requestAnimationFrame(tick);
+        history.pushState(null, '', '#' + id);
+      });
+    });
+    window.addEventListener('resize', function(){ target = clamp(target); });
+  })();
+
+  /* ---------- foco do hero ao carregar ---------- */
+  var projHero = document.getElementById('projHero');
+  if(projHero){
+    window.addEventListener('load', function(){
+      requestAnimationFrame(function(){ projHero.classList.add('is-focused'); });
+    });
+  }
+
+  /* ---------- reveal on scroll ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in-view'); });
+  }
+})();
+</script>
+</body>
+</html>
