@@ -719,6 +719,11 @@ label .req{color:var(--orange);}
 }
 .footer .logo{color:var(--white);}
 .footer-tagline{font-size:13px;color:#8A817A;}
+.footer-client-logo{
+  height:22px;width:auto;object-fit:contain;
+  filter:brightness(0) invert(1);opacity:.65;transition:opacity .2s ease;
+}
+.footer-client-logo:hover{opacity:1;}
 .footer-links{display:flex;gap:28px;font-size:14px;flex-wrap:wrap;}
 .footer-links a{color:#8A817A;text-decoration:none;transition:color .2s ease;}
 .footer-links a:hover{color:var(--white);}
@@ -1250,6 +1255,7 @@ label .req{color:var(--orange);}
     <div class="footer-top">
       <div class="logo">WILL<span style="color:var(--red)">SCOPE</span></div>
       <span class="footer-tagline">Produção de vídeo para negócios em Lisboa, Portugal.<br>Do guião à entrega. Sem intermediários.</span>
+      <img src="assets/brands/dove.png" alt="Dove" class="footer-client-logo">
     </div>
 
     <div class="footer-columns">
